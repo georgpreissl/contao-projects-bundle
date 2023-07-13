@@ -1,0 +1,14 @@
+ul.sortable li {
+    min-width: 100px;
+    min-height: 75px;
+    float: left;
+    margin: 2px 4px 2px 0;
+    padding: 0;
+    background: #eee;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}

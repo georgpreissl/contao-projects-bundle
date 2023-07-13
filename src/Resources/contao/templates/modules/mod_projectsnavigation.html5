@@ -1,0 +1,25 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+	<div class="mod_projectsnavigation__links">
+		
+	
+		<?php if ($this->siblingShowFirstLast && $this->first): ?>
+		<a class="mod_projectsnavigation__first" href="<?= $this->first ?>" title="<?= $this->firstTitle ?>"><?= $GLOBALS['TL_LANG']['tl_module']['project_first'] ?></a>
+		<?php endif; ?>
+
+		<?php if ($this->prev): ?>
+		<a class="mod_projectsnavigation__prev" href="<?= $this->prev ?>" title="<?= $this->prevTitle ?>"><?= $GLOBALS['TL_LANG']['tl_module']['project_prev'] ?></a>
+		<?php endif; ?>
+  </div>
+  <div class="mod_projectsnavigation__links">
+  <?php if ($this->next): ?>
+    <a class="mod_projectsnavigation__next" href="<?= $this->next ?>" title="<?= $this->nextTitle ?>"><?= $GLOBALS['TL_LANG']['tl_module']['project_next'] ?></a>
+  <?php endif; ?>
+
+  <?php if ($this->siblingShowFirstLast && $this->last): ?>
+    <a class="mod_projectsnavigation__last" href="<?= $this->last ?>" title="<?= $this->lastTitle ?>"><?= $GLOBALS['TL_LANG']['tl_module']['project_last'] ?></a>
+  <?php endif; ?>
+  </div>
+
+<?php $this->endblock(); ?>

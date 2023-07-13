@@ -1,0 +1,142 @@
+
+<div class="project_full<?= $this->class ?>" itemscope itemtype="http://schema.org/RealEstateListing" >
+
+	<div class="project_full__header">
+
+		<div class="project_full__image">
+			<?php if ($this->addImage): ?>
+				<?php unset($this->arrData['href']); ?>
+				<?php $this->insert('image', $this->arrData); ?>
+			<?php endif; ?>
+		</div>
+
+		<div class="project_full__title">
+			<h1 class="project_full__hl" itemprop="name" ><?= $this->projectHeadline ?></h1>
+
+			<?php //dump($this->categories); ?>
+			<?php if ($this->projectCategories): ?>
+				<div class="project_full__categories">
+					<span class="project_full__categories-label">Kategorie:</span>
+					<ul >
+						<?php foreach ($this->projectCategories as $category): ?>
+							<li class="<?= $category['class'] ?>">
+								<?php if ($category['image']): ?>
+									<figure class="image_container">
+										<?php $this->insert('picture_default', $category['image']->picture) ?>
+									</figure>
+								<?php endif; ?>
+
+								<?php if ($category['href']): ?>
+									<a href="<?= $category['href'] ?>" title="<?= $category['linkTitle'] ?>" class="md" ><?= $category['name'] ?></a>
+								<?php else: ?>
+									<span><?= $category['name'] ?></span>
+								<?php endif; ?>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				</div>
+			<?php endif; ?>
+
+			<div class="project_full__facts">
+
+				<?php if ($this->customer): ?>
+					<div class="project_full__facts-item">
+						<span class="project_full__facts-label">Kunde:</span>
+						<span class="project_full__facts-value"><?= $this->customer ?></span>
+					</div>
+				<?php endif; ?>
+				<?php if ($this->location): ?>
+					<div class="project_full__facts-item">
+						<span class="project_full__facts-label">Ort:</span>
+						<span class="project_full__facts-value"><?= $this->location ?></span>
+					</div>
+				<?php endif; ?>
+				<?php if ($this->timestamp): ?>
+					<div class="project_full__facts-item">
+						<span class="project_full__facts-label">Fertigstellung:</span>
+						<span class="project_full__facts-value">
+							<time datetime="<?= $this->datetime ?>" itemprop="startDate">
+								<?= $this->parseDate("F Y", $this->timestamp); ?>
+							</time>							
+						</span>
+					</div>
+				<?php endif; ?>
+
+			</div>
+			
+			<?php if ($this->hasDescription): ?>
+				<div class="project_full__description" itemprop="description" >
+					<?= $this->description ?>
+				</div>
+			<?php endif; ?>
+
+
+
+
+		</div>
+	</div>
+
+	<?php if($this->test || $this->hasText): ?>
+		<div class="project_full__content">
+			<div class="project_full__data">
+
+
+				<div class="project_full__gallery">
+					<?php foreach ($this->test as $image): ?>
+						<div class="project_full__gallery-item <?= $image->class ?>">
+							<figure class="image_container"<?php if ($image->margin): ?> style="<?= $image->margin ?>"<?php endif; ?>>
+								<?php if ($image->href): ?>
+									<a href="<?= $image->href ?>"<?= $image->attributes ?><?php if ($image->linkTitle): ?> title="<?= $image->linkTitle ?>"<?php endif; ?>><?php $this->insert('picture_default', $image->picture); ?></a>
+								<?php else: ?>
+									<?php $this->insert('picture_default', $image->picture); ?>
+								<?php endif; ?>
+									<?php if ($image->caption): ?>
+									<figcaption class="caption"><?= $image->caption ?></figcaption>
+								<?php endif; ?>
+							</figure>
+						</div>
+					<?php endforeach; ?>
+				</div>
+
+				<?php if ($this->hasText): ?>
+					<div class="project_full__text">
+						<?= $this->text ?>
+					</div>
+				<?php endif; ?>
+
+
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->enclosure): ?>
+			<div class="project_full__enclosures">
+				<h3 class="project_full__enclosures-title">Weitere Informationen</h3>
+				<div class="project_full__enclosures-links">
+					<?php foreach ($this->enclosure as $enclosure): ?>
+						<?php 
+						// dump($enclosure);
+						$this->insert('link', [
+							'type' => 'text', 
+							'icon' => 'arrow-right', 
+							'url' => $enclosure['href'],
+							'label' => $enclosure['link'] . ' | ' . $enclosure['extension'],
+							'customClass' => 'project_full__enclosures-link',
+							'title' => $enclosure['title']
+						]); 
+						?>						
+					<?php endforeach; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+
+	</div>
+	<div class="project_full__cta cols-md-2 cols-lg-3">
+		<div class="project_full__cta-text cols-lg-span-2">
+			<h2 class="project_full__cta-hl" >Und was können <br class="show-lg" >wir für Sie tun?</h2>
+			<p class="project_full__cta-copy">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.</p>
+		</div>
+		<div class="project_full__cta-form">
+			{{insert_form::1}}	
+		</div>
+	</div>
+</div>

@@ -1,0 +1,58 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/project/languages/en/modules.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="MOD.projects.0">
+        <source>Project</source>
+        <target>Projekte</target>
+      </trans-unit>
+      <trans-unit id="MOD.projects.1">
+        <source>Manage projects</source>
+        <target>Projekte verwalten</target>
+      </trans-unit>
+      <trans-unit id="FMD.projects">
+        <source>Projects</source>
+        <target>Projekte</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectslist.0">
+        <source>Projectlist</source>
+        <target>Projektliste</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectslist.1">
+        <source>Adds a list of project items to the page</source>
+        <target>Fügt der Seite eine Projekteliste hinzu</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectsreader.0">
+        <source>Projectreader</source>
+        <target>Projektleser</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectsreader.1">
+        <source>Shows the details of a project item</source>
+        <target>Stellt einen einzelnen Projektebeitrag dar</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectarchive.0">
+        <source>Project archive</source>
+        <target>Projektearchiv</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectarchive.1">
+        <source>Adds a project archive to the page</source>
+        <target>Fügt der Seite ein Projektearchiv hinzu</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectmenu.0">
+        <source>Project archive menu</source>
+        <target>Projektearchiv-Menü</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectmenu.1">
+        <source>Generates a navigation menu to browse the project archive</source>
+        <target>Erzeugt ein Menü zur Navigation des Projektearchivs</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectscategories.0">
+        <source>Menu with project categories</source>
+        <target>Projekt-Kategorien-Menü</target>
+      </trans-unit>
+      <trans-unit id="FMD.projectscategories.1">
+        <source>Adds a menu with project categories to the site</source>
+        <target>Fügt eine Projekt-Kategorieliste in die Seite ein.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

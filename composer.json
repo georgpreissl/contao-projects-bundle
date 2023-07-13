@@ -1,0 +1,45 @@
+{
+    "name": "georgpreissl/contao-projects-bundle",
+    "homepage": "https://github.com/georgpreissl/projects",
+    "description": "Contao bundle to show projects in the frontend.",
+    "keywords": ["projects", "references", "portfolio", "georgpreissl", "bundle", "contao"],
+    "type": "contao-bundle",
+    "license": "LGPL-3.0-or-later",
+    "authors": [{
+        "name": "Georg Preissl",
+        "homepage": "https://github.com/georgpreissl",
+        "role": "Developer"
+    }],
+    "support": {
+        "website": "https://www.georg-preissl.at",
+        "issues": "https://github.com/georgpreissl/contao-projects-bundle/issues",
+        "source": "https://github.com/georgpreissl/contao-projects-bundle"
+    },
+    "require": {
+        "php": "^7.2 || ^8.0",
+        "contao/core-bundle": "~4.4"
+    },
+    "require-dev": {
+        "contao/manager-plugin": "^2.0"
+    },
+    "conflict": {
+        "contao/manager-plugin": "<2.0 || >=3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GeorgPreissl\\Projects\\": "src/"
+        },
+        "classmap": [
+            "src/Resources/contao/"
+        ],
+        "exclude-from-classmap": [
+            "src/Resources/contao/config/",
+            "src/Resources/contao/dca/",
+            "src/Resources/contao/languages/",
+            "src/Resources/contao/templates/"
+        ]
+    },
+    "extra": {
+        "contao-manager-plugin": "GeorgPreissl\\Projects\\ContaoManager\\Plugin"
+    }
+}

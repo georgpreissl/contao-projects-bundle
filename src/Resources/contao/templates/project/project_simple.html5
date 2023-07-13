@@ -1,0 +1,58 @@
+
+<div class="row ref_simple arc_<?= $this->archive->id ?> block<?= $this->class ?>">
+	<div class="col-xs-12 col-md-7">
+		<figure class="ref_simple_img">
+			<?php 
+			echo $this->generateImage($this->getImage($this->singleSRC, 570, 355, 'center_center'), "jo");  
+			?>
+			
+		</figure>
+	</div>
+	<div class="col-xs-12 col-md-5">
+		<h6><?= $this->headline ?></h6>
+
+		<?php if ($this->hasCompany): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">Firma</p>
+				<p class="ref_data_ft"><?= $this->company ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->hasTrades): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">Gewerk</p>
+				<p class="ref_data_ft"><?= $this->trades ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->hasDescription): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">Auftrag</p>
+				<p class="ref_data_ft"><?= $this->description ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->hasTotalArea): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">Gesamtfläche</p>
+				<p class="ref_data_ft"><?= $this->totalArea ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->hasOrderValue): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">Auftragssumme netto</p>
+				<p class="ref_data_ft"><?= $this->orderValue ?></p>
+			</div>
+		<?php endif; ?>
+
+		<?php if ($this->hasShare): ?>
+			<div class="ref_data_block">
+				<p class="zeile-mit-linie">AnteiL der Leistungserbringung</p>
+				<p class="ref_data_ft"><?= $this->share ?></p>
+			</div>
+		<?php endif; ?>	
+
+	</div>
+</div>
+

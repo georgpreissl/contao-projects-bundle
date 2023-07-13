@@ -1,0 +1,48 @@
+<div class="project_latest" itemscope itemtype="http://schema.org/Article" >
+
+	<?php 
+	if (!$this->hasText && !$this->description) {
+		$this->arrData['href'] = '';
+	}
+	
+	?>
+
+	<?php if ($this->addImage): ?>
+		<?php //dump($this->arrData); ?>
+		<?php $this->arrData['floatClass'] .= ' hover-fx-imagezoom'; ?>
+		<?php $this->insert('image', $this->arrData); ?>
+	<?php endif; ?>
+
+
+	<h2 class="project_latest__hl" itemprop="name">
+		<?php if ($this->hasText || $this->description) : ?>
+			<?= $this->linkHeadline ?>
+		<?php else: ?>
+			<?= $this->headline ?>
+		<?php endif; ?>
+	</h2>
+
+	<div class="project_latest__text">
+		<?= $this->shortDescription ?>
+	</div>
+
+	<?php if ($this->hasText || $this->description) : ?>
+		<?php 
+		// dump($this->link);
+		$this->insert('link', [
+			'type' => 'text', 
+			'url' => $this->link, 
+			'label' => 'Mehr erfahren',
+			'customClass' => 'project_latest__more',
+			'icon' => 'arrow-right'
+		]);
+		?>
+	<?php endif; ?>
+
+</div>
+
+
+
+<?php
+// dump($this);
+?>

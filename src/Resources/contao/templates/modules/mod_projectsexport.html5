@@ -1,0 +1,7 @@
+<h1>Projekt als PDF exportieren</h1>
+
+<p class="project-headline"><?= $this->headline ?></p>
+<img class="project-image" src="<?= $this->thumbnail ?>" alt="" width="300">
+<div class="project-description"><?= $this->description ?></div>
+
+<button id="pdfexport">PDF laden</button>

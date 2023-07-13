@@ -1,0 +1,20 @@
+<?php $this->extend('block_searchable'); ?>
+
+<?php $this->block('content'); ?>
+
+	<?= $this->articles ?>
+
+	<!-- indexer::stop -->
+	<div class="mod_projectsreader__back">
+		<?php 
+		$this->insert('link', [
+			'url' => $this->referer, 
+			'label' => 'Zur Übersicht',
+			'customClass' => 'mod_projectsreader__back-link',
+			'icon' => 'arrow-right'
+		]);
+		?>
+	</div>
+	<!-- indexer::continue -->
+
+<?php $this->endblock(); ?>

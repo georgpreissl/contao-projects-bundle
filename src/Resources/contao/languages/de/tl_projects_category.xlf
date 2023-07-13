@@ -1,0 +1,78 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/project/languages/en/tl_projects_category.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_projects_category.title.0">
+        <source>Title</source>
+        <target>Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.title.1">
+        <source>xxx</source>
+        <target>Bitte Kategorie-Titel eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.frontendTitle.0">
+        <source>Title</source>
+        <target>Frontend Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.frontendTitle.1">
+        <source>Please enter a project archive title.</source>
+        <target>Titel der im Frontend angezeigt wird.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.alias.0">
+        <source>Alias</source>
+        <target>Alias</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.alias.1">
+        <source>xxx</source>
+        <target>Der Kategorie-Alias ist eine eindeutige Referenz, die anstelle der numerischen ID aufgerufen werden kann.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.cssClass.0">
+        <source>CSS</source>
+        <target>CSS-Klasse</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.cssClass.1">
+        <source>xxx</source>
+        <target>Hier kann eine CSS-Klasse vergeben werden, welche zur Kategorie im Front-End hinzugefügt wird.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.title_legend">
+        <source>Title and alias</source>
+        <target>Titel und Alias</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.publish_legend">
+        <source>Publish</source>
+        <target>Veröffentlichung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.redirect_legend">
+        <source>Weiterleitung</source>
+        <target>Weiterleitung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.jumpTo.0">
+        <source>Redirect page</source>
+        <target>Weiterleitungsseite</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.published.0">
+        <source>Publish category</source>
+        <target>Kategorie veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.published.1">
+        <source>Moderate comments</source>
+        <target>Die Kategorie auf der Website anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.feeds.0">
+        <source>RSS feeds</source>
+        <target>RSS-Feeds</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.feeds.1">
+        <source>Manage RSS feeds</source>
+        <target>RSS-Feeds verwalten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.categories.0">
+        <source>New category</source>
+        <target>Kategorien verwalten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.categories.1">
+        <source>New category</source>
+        <target>Projekt-Kategorien erstellen und löschen</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
