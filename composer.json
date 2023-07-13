@@ -1,7 +1,7 @@
 {
     "name": "georgpreissl/contao-projects-bundle",
-    "homepage": "https://github.com/georgpreissl/projects",
-    "description": "Contao bundle to show projects in the frontend.",
+    "homepage": "https://github.com/georgpreissl/contao-projects-bundle",
+    "description": "Mit dieser Erweiterung können im Backend Projekte (zb. Referenzen) verwaltet und via verschiedener Frontend-Module ausgegeben werden.",
     "keywords": ["projects", "references", "portfolio", "georgpreissl", "bundle", "contao"],
     "type": "contao-bundle",
     "license": "LGPL-3.0-or-later",
