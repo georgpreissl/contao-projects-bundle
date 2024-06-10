@@ -9,7 +9,7 @@
 
 	<?php if ($this->addImage): ?>
 		<?php //dump($this->arrData); ?>
-		<?php $this->arrData['floatClass'] .= ' hover-fx-imagezoom'; ?>
+		<?php //$this->arrData['floatClass'] .= ' hover-fx-imagezoom'; ?>
 		<?php $this->insert('image', $this->arrData); ?>
 	<?php endif; ?>
 

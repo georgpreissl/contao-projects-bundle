@@ -17,7 +17,7 @@ use Contao\CoreBundle\DataContainer\PaletteManipulator;
  */
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectslist']    = '
 {title_legend},name,headline,type;
-{config_legend},projects_archives,numberOfItems,projects_featured,projects_order,perPage,skipFirst;
+{config_legend},numberOfItems,projects_featured,projects_order,perPage,skipFirst;
 {template_legend:hide},projects_metaFields,projects_template,customTpl;
 {image_legend:hide},imgSize;
 {protected_legend:hide},protected;

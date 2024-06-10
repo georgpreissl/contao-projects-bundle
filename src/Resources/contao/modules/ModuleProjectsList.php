@@ -11,26 +11,13 @@
 namespace GeorgPreissl\Projects;
 
 
-/**
- * Front end module "project list".
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 class ModuleProjectsList extends ModuleProjects
 {
 
-	/**
-	 * Template
-	 * @var string
-	 */
 	protected $strTemplate = 'mod_projectslist';
 
 
-	/**
-	 * Display a wildcard in the back end
-	 *
-	 * @return string
-	 */
+
 	public function generate()
 	{
 		if (TL_MODE == 'BE')
@@ -47,22 +34,22 @@ class ModuleProjectsList extends ModuleProjects
 			return $objTemplate->parse();
 		}
 		
-		$this->projects_archives = $this->sortOutProtected(deserialize($this->projects_archives));
+		// $this->projects_archives = $this->sortOutProtected(deserialize($this->projects_archives));
 
-		// Return if there are no archives
-		if (!is_array($this->projects_archives) || empty($this->projects_archives))
-		{
-			return '';
-		}
+		// // Return if there are no archives
+		// if (!is_array($this->projects_archives) || empty($this->projects_archives))
+		// {
+		// 	return '';
+		// }
 
 
 
 
         // Generate the list in related categories mode
         // not used!
-        if ($this->projects_relatedCategories) {
-            return $this->generateRelated();
-        }
+        // if ($this->projects_relatedCategories) {
+        //     return $this->generateRelated();
+        // }
 
         // $this->projects_filterCategories);
         // string(1) "1" 
@@ -90,7 +77,7 @@ class ModuleProjectsList extends ModuleProjects
 	 */
 	protected function compile()
 	{
-		
+
 		$limit = null;
 		$offset = intval($this->skipFirst);
 
@@ -167,12 +154,13 @@ class ModuleProjectsList extends ModuleProjects
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
 
-		$objArticles = $this->fetchItems($this->projects_archives, $blnFeatured, ($limit ?: 0), $offset);
+		// $objProjects = $this->fetchItems($this->projects_archives, $blnFeatured, ($limit ?: 0), $offset);
+		$objProjects = $this->fetchItems($blnFeatured, ($limit ?: 0), $offset);
 
 		// Add the articles
-		if ($objArticles !== null)
+		if ($objProjects !== null)
 		{
-			$this->Template->articles = $this->parseProjects($objArticles);
+			$this->Template->articles = $this->parseProjects($objProjects);
 		}
 		
 		$this->Template->archives = $this->projects_archives;
@@ -189,7 +177,8 @@ class ModuleProjectsList extends ModuleProjects
 	 *
 	 * @return integer
 	 */
-	protected function countItems($projectArchives, $blnFeatured)
+	// protected function countItems($projectArchives, $blnFeatured)
+	protected function countItems($blnFeatured)
 	{
 		// HOOK: add custom logic
 		if (isset($GLOBALS['TL_HOOKS']['projectListCountItems']) && is_array($GLOBALS['TL_HOOKS']['projectListCountItems']))
@@ -208,7 +197,8 @@ class ModuleProjectsList extends ModuleProjects
 			}
 		}
 
-		return ProjectsModel::countPublishedByPids($projectArchives, $blnFeatured);
+		// return ProjectsModel::countPublishedByPids($projectArchives, $blnFeatured);
+		return ProjectsModel::countPublished($blnFeatured);
 	}
 
 
@@ -222,7 +212,8 @@ class ModuleProjectsList extends ModuleProjects
 	 *
 	 * @return \Model\Collection|\ProjectModel|null
 	 */
-	protected function fetchItems($projectArchives, $blnFeatured, $limit, $offset)
+	// protected function fetchItems($projectArchives, $blnFeatured, $limit, $offset)
+	protected function fetchItems($blnFeatured, $limit, $offset)
 	{
 		// HOOK: add custom logic
 		if (isset($GLOBALS['TL_HOOKS']['projectListFetchItems']) && is_array($GLOBALS['TL_HOOKS']['projectListFetchItems']))
@@ -283,7 +274,8 @@ class ModuleProjectsList extends ModuleProjects
 		
 
 
-		return ProjectsModel::findPublishedByPids($projectArchives, $blnFeatured, $limit, $offset, array('order'=>$order));
+		// return ProjectsModel::findPublishedByPids($projectArchives, $blnFeatured, $limit, $offset, array('order'=>$order));
+		return ProjectsModel::findPublished($blnFeatured, $limit, $offset, array('order'=>$order));
 	}
 
 

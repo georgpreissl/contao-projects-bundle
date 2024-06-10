@@ -1,15 +1,11 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
- */
+
 
 namespace GeorgPreissl\Projects;
 
+use Contao\System;
+use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 
 
 /**
@@ -173,5 +169,44 @@ class ModuleProjectsReader extends ModuleProjects
 		$objConfig->moderate = $objArchive->moderate;
 
 		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_project', $objArticle->id, $arrNotifies);
+
+
+
+
+		// Overwrite the page metadata (see #2853, #4955 and #87)
+		$responseContext = System::getContainer()->get('contao.routing.response_context_accessor')->getResponseContext();
+
+
+		if ($responseContext && $responseContext->has(HtmlHeadBag::class))
+		{
+			/** @var HtmlHeadBag $htmlHeadBag */
+			$htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
+			$htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+
+			if ($objProject->pageTitle)
+			{
+				$htmlHeadBag->setTitle($objProject->pageTitle); // Already stored decoded
+			}
+			elseif ($objProject->headline)
+			{
+				$htmlHeadBag->setTitle($htmlDecoder->inputEncodedToPlainText($objProject->headline));
+			}
+
+			if ($objProject->shortDescription)
+			{
+				$htmlHeadBag->setMetaDescription($htmlDecoder->inputEncodedToPlainText($objProject->shortDescription));
+			}
+			elseif ($objProject->longDescription)
+			{
+				$htmlHeadBag->setMetaDescription($htmlDecoder->htmlToPlainText($objProject->longDescription));
+			}
+
+			if ($objProject->robots)
+			{
+				$htmlHeadBag->setMetaRobots($objProject->robots);
+			}
+		}
+
+
 	}
 }

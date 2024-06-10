@@ -1,150 +1,119 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
- */
+
+use GeorgPreissl\Projects\Projects;
+use GeorgPreissl\Projects\ProjectsModel;
+use GeorgPreissl\Projects\ProjectsArchiveModel;
 
 
-/**
- * Load tl_content language file
- */
-System::loadLanguageFile('tl_content');
+\Contao\System::loadLanguageFile('tl_content');
 
-
-
-
-/**
- * Table tl_projects
- */
 $GLOBALS['TL_DCA']['tl_projects'] = array
 (
-
-	// Config
 	'config' => array
 	(
 		'dataContainer'               => 'Table',
-		'ptable'                      => 'tl_projects_archive',
-		'ctable'                      => array('tl_content'),
-
-		// Aktiviert die "Speichern und Bearbeiten"-Schaltfläche beim Anlegen eines neuen Datensatzes (nur Sortierungsmodus 4).
-		'switchToEdit'                => true,
 		'enableVersioning'            => true,
 		'onload_callback' => array
 		(
 			array('tl_projects', 'checkPermission')
-		),
-		'oncut_callback' => array
-		(
-			array('tl_projects', 'scheduleUpdate')
-		),
-		'ondelete_callback' => array
-		(
-			array('tl_projects', 'scheduleUpdate')
-		),
-		'onsubmit_callback' => array
-		(
-			array('tl_projects', 'adjustTime'),
-			array('tl_projects', 'scheduleUpdate')
-		),
+		),		
 		'sql' => array
 		(
 			'keys' => array
 			(
-				'id' => 'primary',
-				'alias' => 'index',
-				'pid,start,stop,published' => 'index'
+				'id' => 'primary'
 			)
 		)
 	),
-
-	// List
 	'list' => array
 	(
 		'sorting' => array
 		(
-			'mode'                    => 4,
-			// 'fields'                  => array('date DESC'),
-			'fields'                  => array('sorting'),
+			'mode'                    => 2,
+			'fields'                  => array('headline','customer','location'),
+			'flag'                    => 1,
+			'panelLayout'             => 'sort;filter;search;limit',
+			'fiter'  => array(['location=?', 'Bern'], ['usages>?', 0]),
+			'sortableListView'=>true
+			// 'child_record_callback'   => array('tl_projects', 'generateProjectRow')
+		),
 
-			'headerFields'            => array('title', 'jumpTo', 'tstamp', 'protected', 'allowComments'),
-			'panelLayout'             => 'filter;sort,search,limit',
-			'child_record_callback'   => array('tl_projects', 'listProjectArticles'),
-			'child_record_class'      => 'no_padding'
+
+
+		// 'sorting' => array
+		// (
+		// 	'mode'                    => 4,
+		// 	'fields'                  => array('sorting'),
+		// 	'headerFields'            => array('title'),
+		// 	'panelLayout'             => 'search,limit',
+		// ),
+		'label' => array
+		(
+			'fields'                  => array('headline', 'location'),
+			'format'                  => '%s <span style="color:#b3b3b3;padding-left:3px;">[%s]</span>',
+			'maxCharacters'           => 40
 		),
 		'global_operations' => array
 		(
 			'all' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
 				'href'                => 'act=select',
 				'class'               => 'header_edit_all',
 				'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-			)
+			),
+			'categories' => array
+			(
+				'href'                => 'table=tl_projects_category',
+				'icon'                => 'bundles/georgpreisslprojects/icon.png',
+				'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="c"'
+			)			
 		),
 		'operations' => array
 		(
-			'exportpdf' => array
-			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['exportPdf'],
-				'href'                => 'contao/main.php?do=projectspdfexport',
-				'icon'                => 'bundles/georgpreisslprojects/export-pdf.png',
-				'attributes'          => 'onclick="Backend.getScrollOffset();"',
-				'button_callback'     => array('\GeorgPreissl\Projects\ProjectsExportPdf', 'createExportIcon')
-			),
 			'edit' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['edit'],
 				'href'                => 'table=tl_content',
-				'icon'                => 'edit.gif'
+				'icon'                => 'edit.svg'
 			),
 			'editheader' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['editmeta'],
 				'href'                => 'act=edit',
-				'icon'                => 'header.gif'
-			),
+				'icon'                => 'header.svg'
+			),			
 			'copy' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['copy'],
-				'href'                => 'act=paste&amp;mode=copy',
+				'href'                => 'act=copy',
 				'icon'                => 'copy.gif'
 			),
 			'cut' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['cut'],
 				'href'                => 'act=paste&amp;mode=cut',
-				'icon'                => 'cut.gif'
-			),
+				'icon'                => 'cut.svg'
+			),			
 			'delete' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['delete'],
 				'href'                => 'act=delete',
 				'icon'                => 'delete.gif',
-				'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
+				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null ) . '\'))return false;Backend.getScrollOffset()"'
 			),
 			'toggle' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['toggle'],
-				'icon'                => 'visible.gif',
-				'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-				'button_callback'     => array('tl_projects', 'toggleIcon')
+				'href'                => 'act=toggle&amp;field=published',
+				'icon'                => 'visible.svg',
+				'showInHeader'        => true
 			),
 			'feature' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['feature'],
-				'icon'                => 'featured.gif',
-				'attributes'          => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleFeatured(this,%s)"',
-				'button_callback'     => array('tl_projects', 'iconFeatured')
+				'href'                => 'act=toggle&amp;field=featured',
+				'icon'                => 'featured.svg',
 			),
 			'show' => array
 			(
-				'label'               => &$GLOBALS['TL_LANG']['tl_projects']['show'],
 				'href'                => 'act=show',
-				'icon'                => 'show.gif'
+				'icon'                => 'show.svg'
 			)
 		)
 	),
@@ -156,8 +125,10 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		'default'                     => ''
 		. '{title_legend},headline,alias;'
 		. '{image_legend},singleSRC;'
+		. '{meta_legend},pageTitle,robots,metaDescription,serpPreview;'
 		. '{data_legend},shortDescription,description,customer,period,location,date;'
-		. '{gallery_legend},multiSRC;'
+		. '{gallery_legend},multiSRC,sortBy;'
+		// . '{gallery_legend},multiSRC;'
 		. '{enclosure_legend:hide},addEnclosure;'
 		. '{expert_legend:hide},cssClass,featured;'
 		. '{publish_legend},published'
@@ -180,15 +151,15 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		(
 			'sql'                     => "int(10) unsigned NOT NULL auto_increment"
 		),
-		'pid' => array
-		(
-			'foreignKey'              => 'tl_projects_archive.title',
-			'sql'                     => "int(10) unsigned NOT NULL default '0'",
-			'relation'                => array('type'=>'belongsTo', 'load'=>'eager')
-		),
+		// 'pid' => array
+		// (
+		// 	'foreignKey'              => 'tl_projects_archive.title',
+		// 	'sql'                     => "int(10) unsigned NOT NULL default '0'",
+		// 	'relation'                => array('type'=>'belongsTo', 'load'=>'eager')
+		// ),
 		'sorting' => array
 		(
-			'sql'                     => "int(10) unsigned NOT NULL default '0'"
+			'sql'                     => "int(10) unsigned NOT NULL default 0"
 		),
 		'tstamp' => array
 		(
@@ -196,7 +167,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'headline' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['headline'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['headline'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'sorting'                 => true,
@@ -207,7 +178,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'alias' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['alias'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['alias'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -220,7 +191,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'date' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['date'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['date'],
 			'default'                 => time(),
 			'exclude'                 => true,
 			'filter'                  => true,
@@ -232,16 +203,49 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'time' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['time'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['time'],
 			'default'                 => time(),
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'time', 'doNotCopy'=>true, 'tl_class'=>'w50'),
 			'sql'                     => "int(10) unsigned NOT NULL default '0'"
 		),
+		'pageTitle' => array
+		(
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'robots' => array
+		(
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'select',
+			'options'                 => array('index,follow', 'index,nofollow', 'noindex,follow', 'noindex,nofollow'),
+			'eval'                    => array('tl_class'=>'w50', 'includeBlankOption' => true),
+			'sql'                     => "varchar(32) NOT NULL default ''"
+		),
+		'metaDescription' => array
+		(
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'textarea',
+			'eval'                    => array('style'=>'height:60px', 'decodeEntities'=>true, 'tl_class'=>'clr'),
+			'sql'                     => "text NULL"
+		),
+		'serpPreview' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['MSC']['serpPreview'],
+			'exclude'                 => true,
+			'inputType'               => 'serpPreview',
+			'eval'                    => array('url_callback'=>array('tl_projects', 'getSerpUrl'), 'title_tag_callback'=>array('tl_projects', 'getTitleTag'), 'titleFields'=>array('pageTitle', 'headline'), 'descriptionFields'=>array('shortDescription', 'longDescription')),
+			'sql'                     => null
+		),		
 		'shortDescription' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['shortDescription'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['shortDescription'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -250,7 +254,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'description' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['description'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['description'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
@@ -259,7 +263,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'singleSRC' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['singleSRC'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_content']['singleSRC'],
 			'exclude'                 => true,
 			'inputType'               => 'fileTree',
 			'eval'                    => array('filesOnly'=>true, 'extensions'=>Config::get('validImageTypes'), 'fieldType'=>'radio', 'mandatory'=>true),
@@ -271,7 +275,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'alt' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['alt'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_content']['alt'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -283,12 +287,13 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'exclude'                 => true,
 			'inputType'               => 'fileTree',
 			'eval'                    => array(
-				'multiple'=>true, 
-				'fieldType'=>'checkbox', 
-				'orderField'=>'orderSRC', 
-				'files'=>true, 
-				'extensions'=>Config::get('validImageTypes'),
-				'tl_class'=>'clr'
+				'multiple' => true, 
+				'fieldType' => 'checkbox', 
+				'orderField' => 'orderSRC', 
+				'files' => true, 
+				'extensions' => Config::get('validImageTypes'),
+				'isGallery' => true,
+				'tl_class' => 'clr'
 			),
 			'sql'                     => "blob NULL"
 		),
@@ -297,9 +302,28 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'label'                   => &$GLOBALS['TL_LANG']['MSC']['sortOrder'],
 			'sql'                     => "blob NULL"
 		),
+		// 'sortBy' => array
+		// (
+		// 	'exclude'                 => true,
+		// 	'inputType'               => 'select',
+		// 	'options'                 => array('custom', 'name_asc', 'name_desc', 'date_asc', 'date_desc', 'random'),
+		// 	'reference'               => &$GLOBALS['TL_LANG']['tl_content'],
+		// 	'eval'                    => array('tl_class'=>'w50 clr'),
+		// 	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default ''"
+		// ),
+		'sortBy' => array
+		(
+			'exclude'                 => true,
+			'inputType'               => 'select',
+			'options'                 => array('custom', 'name_asc', 'name_desc', 'date_asc', 'date_desc', 'random'),
+			'reference'               => &$GLOBALS['TL_LANG']['tl_content'],
+			'eval'                    => array('tl_class'=>'w50 clr'),
+			'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default ''"
+		),
+
 		'customer' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['customer'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_content']['customer'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -308,7 +332,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),		
 		'period' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['period'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_content']['period'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -317,7 +341,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),		
 		'location' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['location'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_content']['location'],
 			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
@@ -326,7 +350,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),		
 		'addEnclosure' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['addEnclosure'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['addEnclosure'],
 			'exclude'                 => true,
 			'inputType'               => 'checkbox',
 			'eval'                    => array('submitOnChange'=>true),
@@ -334,7 +358,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'enclosure' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['enclosure'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['enclosure'],
 			'exclude'                 => true,
 			'inputType'               => 'fileTree',
 			'eval'                    => array('multiple'=>true, 'fieldType'=>'checkbox', 'filesOnly'=>true, 'isDownloads'=>true, 'extensions'=>Config::get('allowedDownload'), 'mandatory'=>true),
@@ -342,7 +366,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'cssClass' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['cssClass'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['cssClass'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('tl_class'=>'w50'),
@@ -350,7 +374,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'featured' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['featured'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['featured'],
 			'exclude'                 => true,
 			'filter'                  => true,
 			'inputType'               => 'checkbox',
@@ -359,17 +383,16 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'published' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['published'],
 			'exclude'                 => true,
+			'toggle'                  => true,
 			'filter'                  => true,
-			'flag'                    => 1,
+			'flag'                    => DataContainer::SORT_INITIAL_LETTER_ASC,
 			'inputType'               => 'checkbox',
-			'eval'                    => array('submitOnChange'=>true, 'doNotCopy'=>true),
+			'eval'                    => array('doNotCopy'=>true),
 			'sql'                     => "char(1) NOT NULL default ''"
 		),
 		'start' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['start'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
@@ -377,7 +400,6 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'stop' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['stop'],
 			'exclude'                 => true,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'datim', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
@@ -385,7 +407,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'author' => array
 		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['author'],
+			// 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['author'],
 			'default'                 => BackendUser::getInstance()->id,
 			'exclude'                 => true,
 			'search'                  => true,
@@ -415,9 +437,9 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 /**
  * Register the global save and delete callbacks
  */
-$GLOBALS['TL_DCA']['tl_projects']['config']['onload_callback'][] = array('tl_projects', 'setAllowedCategories');
-$GLOBALS['TL_DCA']['tl_projects']['config']['onsubmit_callback'][] = array('tl_projects', 'updateCategories');
-$GLOBALS['TL_DCA']['tl_projects']['config']['ondelete_callback'][] = array('tl_projects', 'deleteCategories');
+// $GLOBALS['TL_DCA']['tl_projects']['config']['onload_callback'][] = array('tl_projects', 'setAllowedCategories');
+// $GLOBALS['TL_DCA']['tl_projects']['config']['onsubmit_callback'][] = array('tl_projects', 'updateCategories');
+// $GLOBALS['TL_DCA']['tl_projects']['config']['ondelete_callback'][] = array('tl_projects', 'deleteCategories');
 
 /**
  * Extend a tl_projects palette
@@ -429,7 +451,7 @@ $GLOBALS['TL_DCA']['tl_projects']['palettes']['default'] = str_replace('{teaser_
  */
 $GLOBALS['TL_DCA']['tl_projects']['fields']['categories'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['categories'],
+    // 'label'                   => &$GLOBALS['TL_LANG']['tl_projects']['categories'],
     'exclude'                 => true,
     'filter'                  => true,
     'inputType'               => 'treePicker',
@@ -475,6 +497,9 @@ class tl_projects extends Backend
 		parent::__construct();
 		$this->import('BackendUser', 'User');
 	}
+
+
+
 
 
 	/**
@@ -534,6 +559,23 @@ class tl_projects extends Backend
 			case 'show':
 			case 'delete':
 			case 'toggle':
+				$objArchive = $this->Database->prepare("SELECT pid FROM tl_projects WHERE id=?")
+												->limit(1)
+												->execute($id);
+
+				if ($objArchive->numRows < 1)
+				{
+					throw new AccessDeniedException('Invalid news item ID ' . $id . '.');
+				}
+
+				if (!in_array($objArchive->pid, $root))
+				{
+					// throw new AccessDeniedException('Not enough permissions to ' . Input::get('act') . ' project item ID ' . $id . ' of news archive ID ' . $objArchive->pid . '.');
+					throw new AccessDeniedException('Not enough permissions to ' . Input::get('act') . ' project item ID ' . $id . '.');
+				}
+				break;
+	
+	
 			case 'feature':
 				$objArchive = $this->Database->prepare("SELECT pid FROM tl_projects WHERE id=?")
 											 ->limit(1)
@@ -645,6 +687,84 @@ class tl_projects extends Backend
 	{
 		return '<div class="tl_content_left">' . $arrRow['headline'] . ' <span style="color:#b3b3b3;padding-left:3px">[' . Date::parse(Config::get('datimFormat'), $arrRow['date']) . ']</span></div>';
 	}
+
+
+
+
+
+	/**
+	 * Return the SERP URL
+	 *
+	 * @param ProjectsModel $model
+	 *
+	 * @return string
+	 */
+	public function getSerpUrl(ProjectsModel $model)
+	{
+		return Projects::generateProjectUrl($model, false, true);
+	}
+
+	/**
+	 * Return the title tag from the associated page layout
+	 *
+	 * @param ProjectsModel $model
+	 *
+	 * @return string
+	 */
+	public function getTitleTag(ProjectsModel $model)
+	{
+		/** @var ProjectsArchiveModel $archive */
+		if (!$archive = $model->getRelated('pid'))
+		{
+			return '';
+		}
+
+		/** @var PageModel $page */
+		if (!$page = $archive->getRelated('jumpTo'))
+		{
+			return '';
+		}
+
+		$page->loadDetails();
+
+		/** @var LayoutModel $layout */
+		if (!$layout = $page->getRelated('layout'))
+		{
+			return '';
+		}
+
+		$origObjPage = $GLOBALS['objPage'] ?? null;
+
+		// Override the global page object, so we can replace the insert tags
+		$GLOBALS['objPage'] = $page;
+
+		$title = implode(
+			'%s',
+			array_map(
+				static function ($strVal)
+				{
+					return str_replace('%', '%%', System::getContainer()->get('contao.insert_tag.parser')->replaceInline($strVal));
+				},
+				explode('{{page::pageTitle}}', $layout->titleTag ?: '{{page::pageTitle}} - {{page::rootPageTitle}}', 2)
+			)
+		);
+
+		$GLOBALS['objPage'] = $origObjPage;
+
+		return $title;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/**

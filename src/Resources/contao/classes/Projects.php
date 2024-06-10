@@ -3,11 +3,19 @@
 
 namespace GeorgPreissl\Projects;
 
-
+use Contao\PageModel;
+use Contao\Config;
+use Contao\StringUtil;
 
 class Projects extends \Frontend
 {
 
+
+	/**
+	 * URL cache array
+	 * @var array
+	 */
+	private static $arrUrlCache = array();    
 
 
 	/**
@@ -95,6 +103,112 @@ class Projects extends \Frontend
 
 		return $arrPages;
 	}
+
+
+
+
+
+	/**
+	 * Generate a URL and return it as string
+	 *
+	 * @param ProjectsModel $objItem
+	 * @param boolean   $blnAddArchive
+	 * @param boolean   $blnAbsolute
+	 *
+	 * @return string
+	 */
+	public static function generateProjectUrl($objItem, $blnAddArchive=false, $blnAbsolute=false)
+	{
+		$strCacheKey = 'id_' . $objItem->id . ($blnAbsolute ? '_absolute' : '') . (($blnAddArchive && Input::get('month')) ? '_' . Input::get('month') : '');
+
+		// Load the URL from cache
+		if (isset(self::$arrUrlCache[$strCacheKey]))
+		{
+			return self::$arrUrlCache[$strCacheKey];
+		}
+
+		// Initialize the cache
+		self::$arrUrlCache[$strCacheKey] = null;
+
+		switch ($objItem->source)
+		{
+			// Link to an external page
+			case 'external':
+				if (0 === strncmp($objItem->url, 'mailto:', 7))
+				{
+					self::$arrUrlCache[$strCacheKey] = StringUtil::encodeEmail($objItem->url);
+				}
+				else
+				{
+					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($objItem->url);
+				}
+				break;
+
+			// Link to an internal page
+			case 'internal':
+				if (($objTarget = $objItem->getRelated('jumpTo')) instanceof PageModel)
+				{
+					/** @var PageModel $objTarget */
+					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objTarget->getAbsoluteUrl() : $objTarget->getFrontendUrl());
+				}
+				break;
+
+			// Link to an article
+			case 'article':
+				if (($objArticle = ArticleModel::findByPk($objItem->articleId)) instanceof ArticleModel && ($objPid = $objArticle->getRelated('pid')) instanceof PageModel)
+				{
+					$params = '/articles/' . ($objArticle->alias ?: $objArticle->id);
+
+					/** @var PageModel $objPid */
+					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objPid->getAbsoluteUrl($params) : $objPid->getFrontendUrl($params));
+				}
+				break;
+		}
+
+		// Link to the default page
+		if (self::$arrUrlCache[$strCacheKey] === null)
+		{
+			$objPage = PageModel::findByPk($objItem->getRelated('pid')->jumpTo);
+
+			if (!$objPage instanceof PageModel)
+			{
+				self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand(Environment::get('request'));
+			}
+			else
+			{
+				$params = (Config::get('useAutoItem') ? '/' : '/items/') . ($objItem->alias ?: $objItem->id);
+
+				self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objPage->getAbsoluteUrl($params) : $objPage->getFrontendUrl($params));
+			}
+
+			// Add the current archive parameter (news archive)
+			if ($blnAddArchive && Input::get('month'))
+			{
+				self::$arrUrlCache[$strCacheKey] .= '?month=' . Input::get('month');
+			}
+		}
+
+		return self::$arrUrlCache[$strCacheKey];
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/**

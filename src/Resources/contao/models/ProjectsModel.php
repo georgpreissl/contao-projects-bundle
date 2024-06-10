@@ -375,9 +375,9 @@ class ProjectsModel extends \Model
         }
 
         // Exclude particular project items
-        if (is_array($GLOBALS['PROJECT_FILTER_EXCLUDE']) && !empty($GLOBALS['PROJECT_FILTER_EXCLUDE'])) {
-            $arrColumns[] = "$t.id NOT IN (" . implode(',', array_map('intval', $GLOBALS['PROJECT_FILTER_EXCLUDE'])) . ")";
-        }
+        // if (is_array($GLOBALS['PROJECT_FILTER_EXCLUDE']) && !empty($GLOBALS['PROJECT_FILTER_EXCLUDE'])) {
+        //     $arrColumns[] = "$t.id NOT IN (" . implode(',', array_map('intval', $GLOBALS['PROJECT_FILTER_EXCLUDE'])) . ")";
+        // }
 
         $strParam = ProjectsCategories::getParameterName();
 
@@ -472,6 +472,63 @@ class ProjectsModel extends \Model
         return static::findBy($arrColumns, null, $arrOptions);
     }
 
+
+    public static function findPublished($blnFeatured=null, $intLimit=0, $intOffset=0, array $arrOptions=array())
+    {
+
+
+        $t = static::$strTable;
+        $arrColumns = array();
+
+        if ($blnFeatured === true) {
+            $arrColumns[] = "$t.featured=1";
+        } elseif ($blnFeatured === false) {
+            $arrColumns[] = "$t.featured=''";
+        }
+
+        if (!BE_USER_LOGGED_IN) {
+            $time = time();
+            $arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
+        }
+
+        // Filter by categories
+        $arrColumns = static::filterByCategories($arrColumns);
+
+        // Use the manual sorting from the backend if no sorting has been defined in the module settings
+		if (!isset($arrOptions['order']))
+		{
+			$arrOptions['order']  = "$t.sorting ASC";
+		}
+
+        $arrOptions['limit']  = $intLimit;
+        $arrOptions['offset'] = $intOffset;
+
+        // $arrOptions:
+        // Array
+        // (
+        //     [order] => tl_project.sorting ASC
+        //     [limit] => 1  <- die Anzahl der Projekte die aufgelistet werden
+        //     [offset] => 0
+        // )
+
+        // printf('<pre>%s</pre>', print_r($arrColumns,true));
+        // $arrColumns:
+        // ... sieht so aus wenn die Projekte der Kategorie "Hochbau" aufgelistet werden:
+        // Array
+        // (
+        //     [0] => tl_project.pid IN(1,3,2,4)
+        //     [1] => (tl_project.start='' OR tl_project.start<1468769874) AND (tl_project.stop='' OR tl_project.stop>1468769874) AND tl_project.published=1
+        //     [category] => tl_project.id IN (6,1,2,7)  <- Die Projekte mit den ID's 6,1,2 und 7 sind in der Kategorie "Hochbau"!
+        // )
+       
+        // $arrColumns['category'] = 'tl_project.id IN (6,1,2,7)';
+        // ... wird diese Zeile aktiviert werden immer nur die Projekte mit den IDs 6,1,2 und 7 angezeigt!!!
+
+        return static::findBy($arrColumns, null, $arrOptions);
+    }
+
+
+
     /**
      * Count published project items by their parent ID
      *
@@ -489,6 +546,34 @@ class ProjectsModel extends \Model
 
         $t = static::$strTable;
         $arrColumns = array("$t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
+
+        if ($blnFeatured === true) {
+            $arrColumns[] = "$t.featured=1";
+        } elseif ($blnFeatured === false) {
+            $arrColumns[] = "$t.featured=''";
+        }
+
+        if (!BE_USER_LOGGED_IN) {
+            $time = time();
+            $arrColumns[] = "($t.start='' OR $t.start<$time) AND ($t.stop='' OR $t.stop>$time) AND $t.published=1";
+        }
+
+        // Filter by categories
+        $arrColumns = static::filterByCategories($arrColumns);
+
+        return static::countBy($arrColumns, null, $arrOptions);
+    }
+
+
+    public static function countPublished($blnFeatured=null, array $arrOptions=array())
+    {
+        // if (!is_array($arrPids) || empty($arrPids)) {
+        //     return 0;
+        // }
+
+        $t = static::$strTable;
+        // $arrColumns = array("$t.pid IN(" . implode(',', array_map('intval', $arrPids)) . ")");
+        $arrColumns = array();
 
         if ($blnFeatured === true) {
             $arrColumns[] = "$t.featured=1";

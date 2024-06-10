@@ -1,39 +1,19 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
- */
+
 
 namespace GeorgPreissl\Projects;
 
+use Contao\ArrayUtil;
 
 
-/**
- * Parent class for project modules.
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
 abstract class ModuleProjects extends \Module
 {
 
-	/**
-	 * URL cache array
-	 * @var array
-	 */
+
 	private static $arrUrlCache = array();
 
 
-	/**
-	 * Sort out protected archives
-	 *
-	 * @param array $arrArchives
-	 *
-	 * @return array
-	 */
 	protected function sortOutProtected($arrArchives)
 	{
 		if (BE_USER_LOGGED_IN || !is_array($arrArchives) || empty($arrArchives))
@@ -141,6 +121,9 @@ abstract class ModuleProjects extends \Module
 					);
 
 					$auxDate[] = $objFile->mtime;
+
+
+					
 				}
 
 				// Folders
@@ -187,6 +170,57 @@ abstract class ModuleProjects extends \Module
 			}
 
 		}
+
+		// Sort array
+		switch ($objProject->sortBy)
+		{
+			default:
+			case 'name_asc':
+				uksort($images, static function ($a, $b): int
+				{
+					return strnatcasecmp(basename($a), basename($b));
+				});
+				break;
+
+			case 'name_desc':
+				uksort($images, static function ($a, $b): int
+				{
+					return -strnatcasecmp(basename($a), basename($b));
+				});
+				break;
+
+			case 'date_asc':
+				uasort($images, static function (array $a, array $b)
+				{
+					return $a['mtime'] <=> $b['mtime'];
+				});
+				break;
+
+			case 'date_desc':
+				uasort($images, static function (array $a, array $b)
+				{
+					return $b['mtime'] <=> $a['mtime'];
+				});
+				break;
+
+			// Deprecated since Contao 4.0, to be removed in Contao 5.0
+			case 'meta':
+				trigger_deprecation('contao/core-bundle', '4.0', 'The "meta" key in "Contao\ContentGallery::compile()" has been deprecated and will no longer work in Contao 5.0.');
+				// no break
+
+			case 'custom':
+				$images = ArrayUtil::sortByOrderField($images, $objProject->orderSRC);
+				break;
+
+			case 'random':
+				shuffle($images);
+				$this->Template->isRandomOrder = true;
+				break;
+		}
+
+		$images = array_values($images);
+
+
 		$i = 0;
 		$strLightboxId = 'lb' . $objProject->id;
 
@@ -229,7 +263,7 @@ abstract class ModuleProjects extends \Module
 		$objTemplate->linkHeadline = $this->generateLink($objProject->headline, $objProject, $blnAddArchive);
 		$objTemplate->more = $this->generateLink($GLOBALS['TL_LANG']['MSC']['more'], $objProject, $blnAddArchive, true);
 		$objTemplate->link = $this->generateProjectUrl($objProject, $blnAddArchive);
-		$objTemplate->archive = $objProject->getRelated('pid');
+		// $objTemplate->archive = $objProject->getRelated('pid');
 		$objTemplate->count = $intCount; // see #5708
 		$objTemplate->text = '';
 		$objTemplate->hasText = true;
@@ -289,12 +323,12 @@ $objProject->source = 'default';
 		$arrMeta = $this->getMetaFields($objProject);
 
 		// Add the meta information
-		$objTemplate->date = $arrMeta['date'];
+		// $objTemplate->date = $arrMeta['date'];
 		$objTemplate->hasMetaFields = !empty($arrMeta);
-		$objTemplate->numberOfComments = $arrMeta['ccount'];
-		$objTemplate->commentCount = $arrMeta['comments'];
+		// $objTemplate->numberOfComments = $arrMeta['ccount'];
+		// $objTemplate->commentCount = $arrMeta['comments'];
 		$objTemplate->timestamp = $objProject->date;
-		$objTemplate->author = $arrMeta['author'];
+		// $objTemplate->author = $arrMeta['author'];
 		$objTemplate->datetime = date('Y-m-d\TH:i:sP', $objProject->date);
 
 		$objTemplate->addImage = true;
@@ -522,7 +556,8 @@ $objProject->source = 'default';
 		// Link to the default page
 		if (self::$arrUrlCache[$strCacheKey] === null)
 		{
-			$objPage = \PageModel::findWithDetails($objItem->getRelated('pid')->jumpTo);
+			// $objPage = \PageModel::findWithDetails($objItem->getRelated('pid')->jumpTo);
+			$objPage = \PageModel::findWithDetails(10);
 
 			if ($objPage === null)
 			{

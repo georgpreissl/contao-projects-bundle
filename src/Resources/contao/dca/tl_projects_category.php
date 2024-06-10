@@ -16,7 +16,7 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = array
     // Config
     'config' => array
     (
-        'label'                       => $GLOBALS['TL_LANG']['tl_projects_archive']['categories'][0],
+        'label'                       => 'Kategorien', //$GLOBALS['TL_LANG']['tl_projects_archive']['categories'][0],
         'dataContainer'               => 'Table',
         'enableVersioning'            => true,
         'onload_callback' => array
@@ -101,7 +101,7 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = array
                 'label'               => &$GLOBALS['TL_LANG']['tl_projects_category']['delete'],
                 'href'                => 'act=delete',
                 'icon'                => 'delete.gif',
-                'attributes'          => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm'] . '\'))return false;Backend.getScrollOffset()"'
+                'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['tl_visitors_category']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"'
             ),
             'show' => array
             (
@@ -262,14 +262,14 @@ class tl_projects_category extends Backend
         $return = '';
 
         // Return the buttons
-        $imagePasteAfter = Image::getHtml('pasteafter.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id']));
-        $imagePasteInto = Image::getHtml('pasteinto.gif', sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id']));
+        $imagePasteAfter = Image::getHtml('pasteafter.gif', sprintf( ($GLOBALS['TL_LANG'][$table]['pasteafter'][1] ?? null), $row['id']));
+        $imagePasteInto = Image::getHtml('pasteinto.gif', sprintf( ($GLOBALS['TL_LANG'][$table]['pasteinto'][1] ?? null), $row['id']));
 
         if ($row['id'] > 0) {
             $return = $disablePA ? Image::getHtml('pasteafter_.gif').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=1&amp;pid='.$row['id'].(!is_array($arrClipboard['id']) ? '&amp;id='.$arrClipboard['id'] : '')).'" title="'.specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteafter'][1], $row['id'])).'" onclick="Backend.getScrollOffset()">'.$imagePasteAfter.'</a> ';
         }
 
-        return $return.($disablePI ? Image::getHtml('pasteinto_.gif').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!is_array($arrClipboard['id']) ? '&amp;id='.$arrClipboard['id'] : '')).'" title="'.specialchars(sprintf($GLOBALS['TL_LANG'][$table]['pasteinto'][1], $row['id'])).'" onclick="Backend.getScrollOffset()">'.$imagePasteInto.'</a> ');
+        return $return.($disablePI ? Image::getHtml('pasteinto_.gif').' ' : '<a href="'.$this->addToUrl('act='.$arrClipboard['mode'].'&amp;mode=2&amp;pid='.$row['id'].(!is_array($arrClipboard['id']) ? '&amp;id='.$arrClipboard['id'] : '')).'" title="'.specialchars(sprintf( ($GLOBALS['TL_LANG'][$table]['pasteinto'][1] ?? null), $row['id'])).'" onclick="Backend.getScrollOffset()">'.$imagePasteInto.'</a> ');
     }
 
     /**

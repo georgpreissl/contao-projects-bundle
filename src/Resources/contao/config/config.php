@@ -23,7 +23,8 @@ array_insert($GLOBALS['BE_MOD']['content'], 1, array
 (
 	'projects' => array
 	(
-		'tables'      => array('tl_projects_archive', 'tl_projects', 'tl_projects_feed', 'tl_content', 'tl_projects_category'),
+		// 'tables'      => array('tl_projects_archive', 'tl_projects', 'tl_projects_feed', 'tl_content', 'tl_projects_category'),
+		'tables'      => array('tl_projects', 'tl_projects_feed', 'tl_content', 'tl_projects_category'),
 		'icon'        => 'system/modules/project/assets/icon.png',
 		'table'       => array('TableWizard', 'importTable'),
 		'list'        => array('ListWizard', 'importList')
