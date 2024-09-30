@@ -1,0 +1,283 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/project/languages/en/tl_module.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_module.projects_archives.0">
+        <source>Project archives</source>
+        <target>Projektearchive</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_archives.1">
+        <source>Please select one or more project archives.</source>
+        <target>Bitte wählen Sie ein oder mehrere Projektearchive.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_featured.0">
+        <source>Featured items</source>
+        <target>Hervorgehobene Beiträge</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_featured.1">
+        <source>Here you can choose how featured items are handled.</source>
+        <target>Hier legen Sie fest, wie hervorgehobene Beiträge gehandhabt werden.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_jumpToCurrent.0">
+        <source>No period selected</source>
+        <target>Kein Zeitraum ausgewählt</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_jumpToCurrent.1">
+        <source>Here you can define what to display if no period is selected.</source>
+        <target>Hier legen Sie fest, was angezeigt wird, wenn kein Zeitraum ausgewählt ist.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_readerModule.0">
+        <source>Project reader module</source>
+        <target>Projekteleser</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_readerModule.1">
+        <source>Automatically switch to the project reader if an item has been selected.</source>
+        <target>Automatisch zum Projekteleser wechseln, wenn ein Beitrag ausgewählt wurde.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_metaFields.0">
+        <source>Meta fields</source>
+        <target>Meta-Felder</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_metaFields.1">
+        <source>Here you can select the meta fields.</source>
+        <target>Hier können Sie die Meta-Felder auswählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_template.0">
+        <source>Project template</source>
+        <target>Projektetemplate</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_template.1">
+        <source>Here you can select the project template.</source>
+        <target>Hier können Sie das Projektetemplate auswählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_format.0">
+        <source>Archive format</source>
+        <target>Archivformat</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_format.1">
+        <source>Here you can choose the project archive format.</source>
+        <target>Hier können Sie das Archivformat auswählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_startDay.0">
+        <source>Week start day</source>
+        <target>Erster Wochentag</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_startDay.1">
+        <source>Here you can choose the week start day.</source>
+        <target>Hier können Sie den ersten Tag der Woche festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_order.0">
+        <source>Sort order</source>
+        <target>Sortierreihenfolge</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_order.1">
+        <source>Here you can choose the sort order.</source>
+        <target>Hier können Sie die Sortierreihenfolge festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_showQuantity.0">
+        <source>Show number of items</source>
+        <target>Anzahl der Projekte anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_showQuantity.1">
+        <source>Show the number of project items of each month.</source>
+        <target>Die Anzahl der Projekte jedes Monats anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_day">
+        <source>Day</source>
+        <target>Tag</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_month">
+        <source>Month</source>
+        <target>Monat</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_year">
+        <source>Year</source>
+        <target>Jahr</target>
+      </trans-unit>
+      <trans-unit id="tl_module.hide_module">
+        <source>Hide the module</source>
+        <target>Das Modul ausblenden</target>
+      </trans-unit>
+      <trans-unit id="tl_module.show_current">
+        <source>Jump to the current period</source>
+        <target>Zum aktuellen Zeitraum springen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.all_items">
+        <source>Show all project items</source>
+        <target>Alle Beiträge anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.featured">
+        <source>Show featured project items only</source>
+        <target>Nur hervorgehobene Beiträge anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.unfeatured">
+        <source>Skip featured project items</source>
+        <target>Hervorgehobene Beiträge überspringen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_resetCategories.0">
+        <source>Reset categories link</source>
+        <target>Kategorie-Filter zurücksetzen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_resetCategories.1">
+        <source>Add a link to reset categories filter.</source>
+        <target>Fügt einen Link hinzu, um die Filter zurückzusetzen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_enableCanonicalUrls.0">
+        <source>xxx</source>
+        <target>Canonical URL einfügen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_enableCanonicalUrls.1">
+        <source>xxx</source>
+        <target>Fügt bei aktiver Kategorieauswahl einen Canonical-Tag im Head der Webseite ein.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_includeSubcategories.0">
+        <source>xxx</source>
+        <target>Unterkategorien miteinbeziehen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_includeSubcategories.1">
+        <source>xxx</source>
+        <target>Berücksichtigt Unterkategorien bei der Filterung wenn eine übergeordnete Kategorie aktiv ist.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_forceCategoryUrl.0">
+        <source>xxx</source>
+        <target>Kategorie-URL erzwingen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_forceCategoryUrl.1">
+        <source>xxx</source>
+        <target>Nutzt die Zielseite der Kategorie (falls gesetzt) statt die reguläre Filter-URL.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_categoriesRoot.0">
+        <source>Reference category (root)</source>
+        <target>Referenz-Kategorie (Root)</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_categoriesRoot.1">
+        <source>Here you can choose the reference category. It will be used as the starting point (similar to navigation module).</source>
+        <target>Hier kann die Referenzkategorie ausgewählt werden. Diese wird als Startpunkt benutzt (ähnlich zum Navigationsmodul).</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_customCategories.0">
+        <source>xxx</source>
+        <target>Auswählbare Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_customCategories.1">
+        <source>xxx</source>
+        <target>Kategorien, deren Auswahl möglich sein soll.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_categories.0">
+        <source>xxx</source>
+        <target>Nachrichten-Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_categories.1">
+        <source>xxx</source>
+        <target>Bitte wähle die Nachrichten-Kategorien.</target>
+      </trans-unit>      
+      <trans-unit id="tl_module.projects_showEmptyCategories.0">
+        <source>xxx</source>
+        <target>Leere Kategorien anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_showEmptyCategories.1">
+        <source>xxx</source>
+        <target>Zeigt Kategorien auch dann an, wenn die Kategorie keine Nachrichtenbeiträge enthält.</target>
+      </trans-unit>      
+
+      <trans-unit id="tl_module.projects_filterCategories.0">
+        <source>xxx</source>
+        <target>Nach Kategorien filtern</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_filterCategories.1">
+        <source>xxx</source>
+        <target>Filtert die Projekt-Liste nach Kategorien.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_relatedCategories.0">
+        <source>Related categories mode</source>
+        <target>Modus „Verwandte Kategorien“</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_relatedCategories.1">
+        <source>Use categories of the current project item to filter by. Note: the module must be on the same page as project reader module.</source>
+        <target>Verwenden Sie Kategorien des aktuellen Projekts, um zu filtern. Hinweis: Das Modul muss sich auf derselben Seite wie das Projektlesemodul befinden.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_filterDefault.0">
+        <source>xxx</source>
+        <target>Standard-Filter</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_filterDefault.1">
+        <source>xxx</source>
+        <target>Hier kann der Standard-Filter für die Nachrichtenliste gewählt werden.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_filterPreserve.0">
+        <source>xxx</source>
+        <target>Standard-Filter aktivieren</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_filterPreserve.1">
+        <source>xxx</source>
+        <target>Die Standard-Filtereinstellungen gelten auch dann, wenn eine aktive Kategorie ausgewählt wurde.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.order_user_asc">
+        <source>User defined ascending</source>
+        <target>Benutzerdefiniert aufsteigend</target>
+      </trans-unit>
+      <trans-unit id="tl_module.order_user_desc">
+        <source>User defined descending</source>
+        <target>Benutzerdefiniert absteigend</target>
+      </trans-unit>   
+      <trans-unit id="tl_module.projects_first">
+        <source>First project</source>
+        <target>Erstes Projekt</target>
+      </trans-unit>   
+      <trans-unit id="tl_module.projects_prev">
+        <source>Previous project</source>
+        <target>Voriges Projekt</target>
+      </trans-unit>   
+      <trans-unit id="tl_module.projects_next">
+        <source>Next project</source>
+        <target>Nächstes Projekt</target>
+      </trans-unit>   
+      <trans-unit id="tl_module.projects_last">
+        <source>Last project</source>
+        <target>Letztes Projekt</target>
+      </trans-unit>   
+      <trans-unit id="tl_module.categories_legend">
+        <source>Categories</source>
+        <target>Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_related_legend">
+        <source>xxx</source>
+        <target>Verwandte Projekte</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_order_related">
+        <source>xxx</source>
+        <target>Liste mit verwandte Projekte</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_relatedOnly.0">
+        <source>xxx</source>
+        <target>Nur verwandte Projekte in der Liste anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_relatedOnly.1">
+        <source>xxx</source>
+        <target>Beschränkt die Ausgabe auf verwandte Projekte.</target>
+      </trans-unit>      
+      <trans-unit id="tl_module.projects_showRelated.0">
+        <source>xxx</source>
+        <target>Verwandte Projekte anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_showRelated.1">
+        <source>xxx</source>
+        <target>Verwandte Projekte in der Detailansicht des Projekts anzeigen.</target>
+      </trans-unit>      
+      <trans-unit id="tl_module.projects_includeCurrent.0">
+        <source>xxx</source>
+        <target>Aktuelles Projekt miteinbeziehen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_includeCurrent.1">
+        <source>xxx</source>
+        <target>In der Liste erscheint auch das aktuelle Projekt an erster Stelle.</target>
+      </trans-unit>      
+      <trans-unit id="tl_module.projects_disableEmpty.0">
+        <source>xxx</source>
+        <target>Keine leere Ausgabe</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_disableEmpty.1">
+        <source>xxx</source>
+        <target>Zeigt alle Projekte an, wenn keine verwandten Projekte gefunden wurden.</target>
+      </trans-unit>           
+    </body>
+  </file>
+</xliff>

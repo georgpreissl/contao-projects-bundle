@@ -1,0 +1,21 @@
+
+
+
+<a href="<?= $this->link ?>" <?= $this->attributes ?> title="<?= $this->alt ?>" class="ref_teaser arc_<?= $this->archive->id ?> block<?= $this->class ?>" >
+
+	<div class="ref_teaser_inner" >
+		<?php if ($this->addImage): ?>
+        <?php $this->insert('image', $this->arrData); ?>
+      <?php endif; ?>
+
+		<div class="ref_teaser_text">
+			<p class="headline"><?= $this->headline ?></p>
+			<?php 
+			$this->shortDescription = $this->shortDescription ? $this->shortDescription : "&nbsp;"
+			?>
+			<p class="short_description"><?= $this->shortDescription ?></p>
+		</div>
+	</div>
+
+</a>
+

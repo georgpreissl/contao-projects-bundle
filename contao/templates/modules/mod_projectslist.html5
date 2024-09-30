@@ -1,0 +1,19 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+	
+  <?php if (empty($this->articles)): ?>
+    <p class="empty"><?= $this->empty ?></p>
+  <?php else: ?>
+    <div class="mod_projectslist__items">
+    <?php //dump($this->articles) ?>
+    <?= implode('', $this->articles) ?>
+    </div>
+
+<div class="ref_teaser_pagination">
+	
+    <?= $this->pagination ?>
+</div>
+  <?php endif; ?>
+
+<?php $this->endblock(); ?>

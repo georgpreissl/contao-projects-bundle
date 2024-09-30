@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/project/languages/en/tl_module.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_page.projectCategories_param.0">
+        <source>Custom URL parameter name</source>
+        <target>Benutzerdefinierter URL-Parametername</target>
+      </trans-unit>
+      <trans-unit id="tl_page.projectCategories_param.1">
+        <source>Here you can enter a custom parameter name that is used in URL. For example, by entering "kategorie" you can change the default <em>/category/music.html</em> to <em>/kategorie/music.html</em>.'</source>
+        <target>Hier können Sie einen benutzerdefinierten Parameternamen eingeben, der in der URL verwendet wird. Wenn Sie beispielsweise „kategorie“ eingeben, können Sie die Standardeinstellung <em>/category/music.html</em> in <em>/kategorie/music.html</em> ändern.</target>
+      </trans-unit>
+      <trans-unit id="tl_page.projectCategories_legend">
+        <source>Project categories settings</source>
+        <target>Projekt-Kategorien Einstellungen</target>
+      </trans-unit>   
+    </body>
+  </file>
+</xliff>

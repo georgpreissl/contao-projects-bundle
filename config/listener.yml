@@ -1,0 +1,72 @@
+services:
+    _defaults:
+        public: true
+
+    _instanceof:
+        Contao\CoreBundle\Framework\FrameworkAwareInterface:
+            calls:
+                - ["setFramework", ["@contao.framework"]]
+
+    georgpreissl_project_categories.listener.ajax:
+        class: GeorgPreissl\Projects\EventListener\AjaxListener
+        arguments:
+            - "@monolog.logger.contao"
+
+    # georgpreissl_project_categories.listener.change_language:
+    #     class: GeorgPreissl\Projects\EventListener\ChangeLanguageListener
+    #     arguments:
+    #         - "@georgpreissl_project_categories.manager"
+
+    # georgpreissl_project_categories.listener.insert_tags:
+    #     class: GeorgPreissl\Projects\EventListener\InsertTagsListener
+    #     arguments:
+    #         - "@georgpreissl_project_categories.manager"
+
+    # georgpreissl_project_categories.listener.projects:
+    #     class: GeorgPreissl\Projects\EventListener\ProjectsListener
+    #     arguments:
+    #       - "@georgpreissl_project_categories.projects_criteria_builder"
+
+
+
+    # georgpreissl_project_categories.listener.template:
+    #     class: GeorgPreissl\Projects\EventListener\TemplateListener
+    #     arguments:
+    #         - "@georgpreissl_project_categories.manager"
+
+    # Data container            
+    georgpreissl_project_categories.listener.data_container.content:
+        class: GeorgPreissl\Projects\EventListener\DataContainer\ContentListener
+        arguments:
+            - "@database_connection"
+
+    # georgpreissl_project_categories.listener.data_container.feed:
+    #     class: GeorgPreissl\Projects\EventListener\DataContainer\FeedListener
+    #     arguments:
+    #         - "@database_connection"
+    #         - "@session"
+
+    # georgpreissl_project_categories.listener.data_container.projects_archive:
+    #     class: GeorgPreissl\Projects\EventListener\DataContainer\ProjectsArchiveListener
+    #     arguments:
+    #         - "@georgpreissl_project_categories.permission_checker"            
+
+    # georgpreissl_project_categories.listener.data_container.projects_category:
+    #     class: GeorgPreissl\Projects\EventListener\DataContainer\ProjectsCategoryListener
+    #     arguments:
+    #         - "@database_connection"
+    #         - "@georgpreissl_project_categories.permission_checker"
+    #         - "@session"
+    #         - "@?contao.slug"            
+
+    # georgpreissl_project_categories.listener.data_container.projects:
+    #     class: GeorgPreissl\Projects\EventListener\DataContainer\ProjectsListener
+    #     arguments:
+    #         - "@database_connection"
+    #         - '@Codefog\HasteBundle\DcaRelationsManager'
+    #         - "@georgpreissl_project_categories.permission_checker"
+
+    georgpreissl_project_categories.listener.data_container.settings:
+        class: GeorgPreissl\Projects\EventListener\DataContainer\SettingsListener
+        arguments:
+            - "@?contao.slug.valid_characters"            

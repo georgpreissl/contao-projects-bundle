@@ -1,0 +1,490 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="system/modules/project/languages/en/tl_project.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_projects.headline.0">
+        <source>Title</source>
+        <target>Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.headline.1">
+        <source>Please enter the project title.</source>
+        <target>Bitte geben Sie den Titel des Projekts ein.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.alias.0">
+        <source>Alias</source>
+        <target>Alias</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.alias.1">
+        <source>The project alias is a unique reference to the article which can be called instead of its numeric ID.</source>
+        <target>Der Projektealias ist eine eindeutige Referenz, die anstelle der numerischen Artikel-ID aufgerufen werden kann.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.author.0">
+        <source>Author</source>
+        <target>Autor</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.author.1">
+        <source>Here you can change the author of the project item.</source>
+        <target>Hier können Sie den Autor des Beitrags ändern.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.date.0">
+        <source>Date</source>
+        <target>Datum</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.date.1">
+        <source>Please enter the date according to the global date format.</source>
+        <target>Bitte geben Sie das Datum gemäß des globalen Datumsformats ein.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.time.0">
+        <source>Time</source>
+        <target>Uhrzeit</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.time.1">
+        <source>Please enter the time according to the global time format.</source>
+        <target>Bitte geben Sie die Uhrzeit gemäß des globalen Zeitformats ein.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.pageTitle.0">
+        <source>Meta title</source>
+        <target>Meta-Titel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.pageTitle.1">
+        <source>Here you can add a custom meta title to overwrite the default page title.</source>
+        <target>Hier können Sie einen individuellen Meta-Titel eingeben, um den Standard-Seitentitel zu überschreiben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.robots.0">
+        <source>Robots tag</source>
+        <target>Robots-Tag</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.robots.1">
+        <source>Here you can overwrite how search engines handle the news item.</source>
+        <target>Hier legen Sie fest, wie Suchmaschinen den Beitrag behandeln.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.metaDescription.0">
+        <source>Meta description</source>
+        <target>Meta-Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.metaDescription.1">
+        <source>Here you can add a custom meta description to overwrite the default page description.</source>
+        <target>Hier können Sie eine individuelle Meta-Beschreibung eingeben, um die Standard-Seitenbeschreibung zu überschreiben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.subheadline.0">
+        <source>Subheadline</source>
+        <target>Unterüberschrift</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.subheadline.1">
+        <source>Here you can enter a subheadline.</source>
+        <target>Hier können Sie eine Unterüberschrift eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.teaser.0">
+        <source>News teaser</source>
+        <target>Teasertext</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.teaser.1">
+        <source>The news teaser can be shown in a news list instead of the full story. A &quot;read more …&quot; link will be added automatically.</source>
+        <target>Der Teasertext kann in einer Nachrichtenliste anstatt des ganzen Beitrags angezeigt werden. Ein &quot;Weiterlesen …&quot;-Link wird automatisch hinzugefügt.</target>
+      </trans-unit>
+
+
+
+      <trans-unit id="tl_projects.subheadline.0">
+        <source>Subheadline</source>
+        <target>Unterüberschrift</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.subheadline.1">
+        <source>Here you can enter a subheadline.</source>
+        <target>Hier können Sie eine Unterüberschrift eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.singleSRC.0">
+        <source>Source file</source>
+        <target>Quelldatei</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.singleSRC.1">
+        <source>Please select a file or folder from the files directory.</source>
+        <target>Bitte wählen Sie eine Datei oder einen Ordner aus der Dateiübersicht.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.shortDescription.0">
+        <source>Short descriptioon</source>
+        <target>Kurze Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.shortDescription.1">
+        <source>The short description can be shown in a project list instead of the full article. A &quot;read more …&quot; link will be added automatically.</source>
+        <target>Die Kurzbeschreibung kann in einer Projekteliste anstatt des Projektetextes angezeigt werden. Ein &quot;Weiterlesen …&quot;-Link wird automatisch hinzugefügt.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.text.0">
+        <source>Project text</source>
+        <target>Projektetext</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.text.1">
+        <source>Here you can enter the project text.</source>
+        <target>Hier können Sie den Projektetext eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.description.0">
+        <source>Description</source>
+        <target>Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.description.1">
+        <source>xxx</source>
+        <target>Hier können Sie eine Beschreibung des Projekts eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.customer.0">
+        <source>Customer</source>
+        <target>Kunde</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.customer.1">
+        <source>xxx</source>
+        <target>Hier können Sie den Kunden des Projekts eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.period.0">
+        <source>Period</source>
+        <target>Zeitraum</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.period.1">
+        <source>xxx</source>
+        <target>Hier können Sie den Zeitraum der Leistungserbringung eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.location.0">
+        <source>Location</source>
+        <target>Ort</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.location.1">
+        <source>xxx</source>
+        <target>Hier können Sie den Ort des Projekts eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.addImage.0">
+        <source>Add an image</source>
+        <target>Ein Bild hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.addImage.1">
+        <source>Add an image to the project item.</source>
+        <target>Dem Beitrag ein Bild hinzufügen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.addEnclosure.0">
+        <source>Add enclosures</source>
+        <target>Anlagen hinzufügen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.addEnclosure.1">
+        <source>Add one or more downloadable files to the project item.</source>
+        <target>Dem Beitrag eine oder mehrere Dateien als Download hinzufügen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.enclosure.0">
+        <source>Enclosures</source>
+        <target>Anlagen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.enclosure.1">
+        <source>Please choose the files you want to attach.</source>
+        <target>Bitte wählen Sie die Dateien aus, die Sie hinzufügen möchten.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.source.0">
+        <source>Redirect target</source>
+        <target>Weiterleitungsziel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.source.1">
+        <source>Here you can override the default redirect target.</source>
+        <target>Hier können Sie die Standard-Weiterleitung überschreiben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.multiSRC.0">
+        <source>xxx</source>
+        <target>Quelldateien</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.multiSRC.1">
+        <source>xxx</source>
+        <target>Bitte wählen Sie eine oder mehr Dateien oder Ordner aus der Dateiübersicht. Wenn Sie einen Ordner auswählen, werden die darin enthaltenen Dateien automatisch eingefügt.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.sortBy.0">
+        <source>Sort</source>
+        <target>Sortieren</target>
+      </trans-unit>      
+      <trans-unit id="tl_projects.sortBy.1">
+        <source>Please select the sorting order of the gallery images.</source>
+        <target>Bitte wählen Sie die Sortierreihenfolge der Galerie-Bilder aus.</target>
+      </trans-unit>        
+      <trans-unit id="tl_projects.default.0">
+        <source>Use default</source>
+        <target>Standard</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.default.1">
+        <source>By clicking the &quot;read more …&quot; button, visitors will be redirected to the default page of the project archive.</source>
+        <target>Beim Anklicken des &quot;Weiterlesen …&quot;-Links wird der Besucher auf die Standardseite des Projektearchivs weitergeleitet.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.internal.0">
+        <source>Page</source>
+        <target>Seite</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.internal.1">
+        <source>By clicking the &quot;read more …&quot; button, visitors will be redirected to a page.</source>
+        <target>Beim Anklicken des &quot;Weiterlesen …&quot;-Links wird der Besucher auf eine Seite weitergeleitet.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.article.0">
+        <source>Article</source>
+        <target>Artikel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.article.1">
+        <source>By clicking the &quot;read more …&quot; button, visitors will be redirected to an article.</source>
+        <target>Beim Anklicken des &quot;Weiterlesen …&quot;-Links wird der Besucher auf einen Artikel weitergeleitet.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.external.0">
+        <source>External URL</source>
+        <target>Externe URL</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.external.1">
+        <source>By clicking the &quot;read more …&quot; button, visitors will be redirected to an external website.</source>
+        <target>Beim Anklicken des &quot;Weiterlesen …&quot;-Links wird der Besucher auf eine externe Webseite weitergeleitet.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.jumpTo.0">
+        <source>Redirect page</source>
+        <target>Weiterleitungsseite</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.jumpTo.1">
+        <source>Please choose the page to which visitors will be redirected when clicking the project item.</source>
+        <target>Bitte wählen Sie die Seite aus, zu der Besucher weitergeleitet werden, wenn Sie einen Beitrag anklicken.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.articleId.0">
+        <source>Article</source>
+        <target>Artikel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.articleId.1">
+        <source>Please choose the article to which visitors will be redirected when clicking the project item.</source>
+        <target>Bitte wählen Sie den Artikel aus, zu der Besucher weitergeleitet werden, wenn Sie einen Beitrag anklicken.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.cssClass.0">
+        <source>CSS class</source>
+        <target>CSS-Klasse</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.cssClass.1">
+        <source>Here you can enter one or more classes.</source>
+        <target>Hier können Sie eine oder mehrere Klassen eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.relatedProjects.0">
+        <source>Related projects</source>
+        <target>Verwandte Projekte</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.relatedProjects.1">
+        <source>Select other projects related to this project.</source>
+        <target>Wählen Sie andere Projekte aus, die mit diesem Beitrag verwandt sind.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.featured.0">
+        <source>Feature item</source>
+        <target>Beitrag hervorheben</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.featured.1">
+        <source>Show the project item in a featured project list.</source>
+        <target>Den Beitrag in einer Liste hervorgehobener Projekte anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.published.0">
+        <source>Publish item</source>
+        <target>Beitrag veröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.published.1">
+        <source>Make the project item publicly visible on the website.</source>
+        <target>Den Beitrag auf der Webseite anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.start.0">
+        <source>Show from</source>
+        <target>Anzeigen ab</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.start.1">
+        <source>Do not show the project item on the website before this day.</source>
+        <target>Den Beitrag erst ab diesem Tag auf der Webseite anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.stop.0">
+        <source>Show until</source>
+        <target>Anzeigen bis</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.stop.1">
+        <source>Do not show the project item on the website on and after this day.</source>
+        <target>Den Beitrag nur bis zu diesem Tag auf der Webseite anzeigen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.tstamp.0">
+        <source>Revision date</source>
+        <target>Änderungsdatum</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.tstamp.1">
+        <source>Date and time of the latest revision</source>
+        <target>Datum und Uhrzeit der letzten Änderung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.title_legend">
+        <source>Title and alias</source>
+        <target>Titel und Alias</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.date_legend">
+        <source>Date and time</source>
+        <target>Datum und Zeit</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.teaser_legend">
+        <source>Subheadline and teaser</source>
+        <target>Unterüberschrift und Teaser</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.text_legend">
+        <source>Project text</source>
+        <target>Projektetext</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.image_legend">
+        <source>Image</source>
+        <target>Bild</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.data_legend">
+        <source>Data</source>
+        <target>Daten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.gallery_legend">
+        <source>Gallery</source>
+        <target>Galerie</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.enclosure_legend">
+        <source>Enclosures</source>
+        <target>Anlagen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.source_legend">
+        <source>Redirect target</source>
+        <target>Weiterleitungsziel</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.meta_legend">
+        <source>Metadata</source>
+        <target>Metadaten</target>
+      </trans-unit>      
+      <trans-unit id="tl_projects.related_legend">
+        <source>Related Projects</source>
+        <target>Verwandte Projekte</target>
+      </trans-unit>      
+      <trans-unit id="tl_projects.expert_legend">
+        <source>Expert settings</source>
+        <target>Experten-Einstellungen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.publish_legend">
+        <source>Publish settings</source>
+        <target>Veröffentlichung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.new.0">
+        <source>New project</source>
+        <target>Neues Projekt</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.new.1">
+        <source>Create a new project</source>
+        <target>Ein neues Projekt erstellen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.show.0">
+        <source>Article details</source>
+        <target>Artikeldetails</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.show.1">
+        <source>Show the details of project article ID %s</source>
+        <target>Die Details des Beitrags ID %s anzeigen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.edit.0">
+        <source>Edit article</source>
+        <target>Artikel bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.edit.1">
+        <source>Edit project article ID %s</source>
+        <target>Beitrag ID %s bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.copy.0">
+        <source>Duplicate article</source>
+        <target>Artikel duplizieren</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.copy.1">
+        <source>Duplicate project article ID %s</source>
+        <target>Beitrag ID %s duplizieren</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.cut.0">
+        <source>Move article</source>
+        <target>Artikel verschieben</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.cut.1">
+        <source>Move project article ID %s</source>
+        <target>Beitrag ID %s verschieben</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.delete.0">
+        <source>Delete article</source>
+        <target>Artikel löschen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.delete.1">
+        <source>Delete project article ID %s</source>
+        <target>Beitrag ID %s löschen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.toggle.0">
+        <source>Publish/unpublish article</source>
+        <target>Artikel veröffentlichen/unveröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.toggle.1">
+        <source>Publish/unpublish project article ID %s</source>
+        <target>Beitrag ID %s veröffentlichen/unveröffentlichen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.feature.0">
+        <source>Feature/unfeature article</source>
+        <target>Beitrag hervorheben/zurücksetzen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.feature.1">
+        <source>Feature/unfeature project article ID %s</source>
+        <target>Beitrag ID %s hervorheben/zurücksetzen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.editheader.0">
+        <source>Edit archive</source>
+        <target>Archiv bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.editheader.1">
+        <source>Edit the archive settings</source>
+        <target>Die Archiv-Einstellungen bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.editmeta.0">
+        <source>Edit article settings</source>
+        <target>Beitrag bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.editmeta.1">
+        <source>Edit the article settings</source>
+        <target>Die Beitragseinstellungen bearbeiten</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.pasteafter.0">
+        <source>Paste into this archive</source>
+        <target>In dieses Projektearchiv einfügen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.pasteafter.1">
+        <source>Paste after project article ID %s</source>
+        <target>Nach dem Beitrag ID %s einfügen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.categories.0">
+        <source>Categories</source>
+        <target>Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.categories.1">
+        <source>Choose one or more categories</source>
+        <target>Eine oder mehrere Kategorien auswählen</target>
+      </trans-unit>      
+      <trans-unit id="tl_projects.category_legend">
+        <source>Project categories</source>
+        <target>Projekt-Kategorien</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.ordered">
+        <source>ordered list</source>
+        <target>nummerierte Liste</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.unordered">
+        <source>unordered list</source>
+        <target>unnummerierte Liste</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.name_asc">
+        <source>File name (ascending)</source>
+        <target>Dateiname (aufsteigend)</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.name_desc">
+        <source>File name (descending)</source>
+        <target>Dateiname (absteigend)</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.date_asc">
+        <source>Date (ascending)</source>
+        <target>Datum (aufsteigend)</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.date_desc">
+        <source>Date (descending)</source>
+        <target>Datum (absteigend)</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.custom">
+        <source>Custom order</source>
+        <target>Individuelle Reihenfolge</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.random">
+        <source>Random order</source>
+        <target>Zufällige Reihenfolge</target>
+      </trans-unit>
+
+    </body>
+  </file>
+</xliff>
