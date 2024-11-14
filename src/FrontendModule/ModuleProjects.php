@@ -16,6 +16,8 @@ use Contao\CommentsModel;
 use GeorgPreissl\Projects\Projects;
 use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use GeorgPreissl\Projects\Model\ProjectsArchiveModel;
+use GeorgPreissl\Projects\Model\ProjectsModel;
+use Contao\CoreBundle\Security\ContaoCorePermissions;
 
 abstract class ModuleProjects extends Module
 {

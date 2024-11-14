@@ -35,6 +35,7 @@ class AjaxListener implements FrameworkAwareInterface
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        dump($this->framework);
     }
 
     /**

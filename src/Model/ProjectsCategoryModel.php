@@ -11,7 +11,7 @@ use Contao\Database;
 use Contao\Date;
 use Contao\FilesModel;
 use Contao\Model\Collection;
-use GeorgPreissl\Projects\ProjectsModel;
+use GeorgPreissl\Projects\Model\ProjectsModel;
 use Contao\System;
 use Contao\Model;
 
@@ -357,8 +357,9 @@ WHERE {$relation['reference_field']} IN (SELECT id FROM tl_projects WHERE pid IN
         if (\count($archives)) {
             $columns[] = "$t.pid IN (".\implode(',', \array_map('intval', $archives)).')';
         }
+        $hasBackendUser = System::getContainer()->get('contao.security.token_checker')->hasBackendUser();
 
-        if (!BE_USER_LOGGED_IN) {
+        if (!$hasBackendUser) {
             $time = Date::floorToMinute();
             $columns[] = "$t.published=? AND ($t.start=? OR $t.start<=?) AND ($t.stop=? OR $t.stop>?)";
             $values = \array_merge($values, [1, '', $time, '', $time]);

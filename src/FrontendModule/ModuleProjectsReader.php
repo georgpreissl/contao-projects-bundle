@@ -5,8 +5,13 @@
 namespace GeorgPreissl\Projects\FrontendModule;
 
 use Contao\System;
+use Contao\Input;
+use Contao\Config;
+use Contao\StringUtil;
+use Contao\BackendTemplate;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
-
+use Symfony\Component\HttpFoundation\Request;
+use GeorgPreissl\Projects\Model\ProjectsModel;
 
 /**
  * Front end module "project reader".
@@ -30,10 +35,10 @@ class ModuleProjectsReader extends ModuleProjects
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
+		if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create('')))
 		{
 			/** @var \BackendTemplate|object $objTemplate */
-			$objTemplate = new \BackendTemplate('be_wildcard');
+			$objTemplate = new BackendTemplate('be_wildcard');
 
 			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['projectsreader'][0]) . ' ###';
 			$objTemplate->title = $this->headline;
@@ -45,13 +50,13 @@ class ModuleProjectsReader extends ModuleProjects
 		}
 
 		// Set the item from the auto_item parameter
-		if (!isset($_GET['items']) && \Config::get('useAutoItem') && isset($_GET['auto_item']))
+		if (!isset($_GET['items']) && Config::get('useAutoItem') && isset($_GET['auto_item']))
 		{
-			\Input::setGet('items', \Input::get('auto_item'));
+			Input::setGet('items', Input::get('auto_item'));
 		}
 
 		// Do not index or cache the page if no project item has been specified
-		if (!\Input::get('items'))
+		if (!Input::get('items'))
 		{
 			/** @var \PageModel $objPage */
 			global $objPage;
@@ -62,7 +67,7 @@ class ModuleProjectsReader extends ModuleProjects
 			return '';
 		}
 
-		$this->projects_archives = $this->sortOutProtected(deserialize($this->projects_archives));
+		$this->projects_archives = $this->sortOutProtected(StringUtil::deserialize($this->projects_archives));
 
 		// Do not index or cache the page if there are no archives
 		if (!is_array($this->projects_archives) || empty($this->projects_archives))
@@ -93,7 +98,7 @@ class ModuleProjectsReader extends ModuleProjects
 		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
 
 		// Get the project item
-		$objArticle = ProjectsModel::findPublishedByParentAndIdOrAlias(\Input::get('items'), $this->projects_archives);
+		$objArticle = ProjectsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $this->projects_archives);
 
 		if (null === $objArticle)
 		{
@@ -108,7 +113,7 @@ class ModuleProjectsReader extends ModuleProjects
 		// Overwrite the page title (see #2853 and #4955)
 		if ($objArticle->headline != '')
 		{
-			$objPage->pageTitle = strip_tags(strip_insert_tags($objArticle->headline));
+			$objPage->pageTitle = strip_tags(StringUtil::stripInsertTags($objArticle->headline));
 		}
 
 		// Overwrite the page description

@@ -56,8 +56,8 @@
 						<span class="project_full__facts-label">Fertigstellung:</span>
 						<span class="project_full__facts-value">
 							<time datetime="<?= $this->datetime ?>" itemprop="startDate">
-								<?= $this->parseDate("F Y", $this->timestamp); ?>
-							</time>							
+								<?php //echo $this->parseDate("F Y", $this->timestamp); ?>
+							</time>	
 						</span>
 					</div>
 				<?php endif; ?>
