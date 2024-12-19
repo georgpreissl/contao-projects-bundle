@@ -18,7 +18,7 @@ use GeorgPreissl\Projects\Widget\ProjectCategoriesPickerWidget;
 use Contao\System;
 use Contao\ListWizard;
 use Contao\TableWizard;
-
+use Symfony\Component\HttpFoundation\Request;
 
 
 // Back end modules
