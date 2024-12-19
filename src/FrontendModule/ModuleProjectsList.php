@@ -8,6 +8,8 @@ use Contao\System;
 use Contao\BackendTemplate;
 use Contao\StringUtil;
 use Contao\Input;
+use Contao\Config;
+use Contao\Pagination;
 use GeorgPreissl\Projects\Model\ProjectsModel;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Model\Collection;
@@ -103,11 +105,11 @@ class ModuleProjectsList extends ModuleProjects
 		}
 
 		// Handle featured project
-		if ($this->project_featured == 'featured')
+		if ($this->projects_featured == 'featured')
 		{
 			$blnFeatured = true;
 		}
-		elseif ($this->project_featured == 'unfeatured')
+		elseif ($this->projects_featured == 'unfeatured')
 		{
 			$blnFeatured = false;
 		}
@@ -140,7 +142,7 @@ class ModuleProjectsList extends ModuleProjects
 
 			// Get the current page
 			$id = 'page_n' . $this->id;
-			$page = (\Input::get($id) !== null) ? \Input::get($id) : 1;
+			$page = (Input::get($id) !== null) ? Input::get($id) : 1;
 
 			// Do not index or cache the page if the page number is outside the range
 			if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
@@ -165,7 +167,7 @@ class ModuleProjectsList extends ModuleProjects
 			}
 
 			// Add the pagination menu
-			$objPagination = new \Pagination($total, $this->perPage, \Config::get('maxPaginationLinks'), $id);
+			$objPagination = new Pagination($total, $this->perPage, Config::get('maxPaginationLinks'), $id);
 			$this->Template->pagination = $objPagination->generate("\n  ");
 		}
 

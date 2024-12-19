@@ -13,6 +13,7 @@ use Contao\FrontendTemplate;
 use Contao\FilesModel;
 use Contao\ContentModel;
 use Contao\CommentsModel;
+use Contao\File;
 use GeorgPreissl\Projects\Projects;
 use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use GeorgPreissl\Projects\Model\ProjectsArchiveModel;
@@ -83,6 +84,7 @@ abstract class ModuleProjects extends Module
 		// dump($this->objFiles);
 
 		$images = array();
+		$arrGallery = array();
 		$test = array();
 		$auxDate = array();
 		$objFiles = $this->objFiles;
@@ -170,6 +172,7 @@ abstract class ModuleProjects extends Module
 			}
 
 		}
+// dump($objProject->sortBy);
 
 		// Sort array
 		switch ($objProject->sortBy)
@@ -209,7 +212,7 @@ abstract class ModuleProjects extends Module
 				// no break
 
 			case 'custom':
-				$images = ArrayUtil::sortByOrderField($images, $objProject->orderSRC);
+				// $images = ArrayUtil::sortByOrderField($images, $objProject->orderSRC);
 				break;
 
 			case 'random':
@@ -224,30 +227,40 @@ abstract class ModuleProjects extends Module
 		$i = 0;
 		$strLightboxId = 'lb' . $objProject->id;
 
-		foreach ($images as $pic) {
-			$objPic = new \stdClass();
-			// $pic['size'] = 8;
-			$pic['size'] = [560, 360, 'crop'];
-			// whether a lightbox should be used
-			$pic['fullsize'] = true;
-			// dump($pic);
-			$this->addImageToTemplate($objPic, $pic, null, $strLightboxId);
-			$test[$i] = $objPic;
-			$i++;
+
+		// $imgSize = $objProject->size ?: null;
+
+		// // Override the default image size
+		// if ($this->projects_imgSizeGallery)
+		// {
+		// 	$size = StringUtil::deserialize($this->projects_imgSizeGallery);
+
+		// 	if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]) || ($size[2][0] ?? null) === '_')
+		// 	{
+		// 		$imgSize = $this->imgSize;
+		// 	}
+		// }
+
+		$figureBuilder = System::getContainer()
+			->get('contao.image.studio')
+			->createFigureBuilder()
+			->setSize($this->projects_imgSizeGallery);
+
+
+		foreach ($images as $image) {
+
+
+				$figure = $figureBuilder
+				->fromId($image['id'])
+				->build();
+
+				$cellData = $figure->getLegacyTemplateData();
+				$cellData['figure'] = $figure;				
+				$arrGallery[] = (object) $cellData;
+
 		}
 
-		// dump($test);
-
-
-		$objTemplate->images = $images;
-		$objTemplate->test = $test;
-
-
-
-
-
-
-		// printf('<pre>%s</pre>', print_r($objProject,true));
+		$objTemplate->gallery = $arrGallery;
 
 		$objTemplate->class = (($objProject->cssClass != '') ? ' ' . $objProject->cssClass : '') . $strClass;
 		$objTemplate->projectHeadline = $objProject->headline;

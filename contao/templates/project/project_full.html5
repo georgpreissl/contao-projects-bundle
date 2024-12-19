@@ -76,37 +76,26 @@
 		</div>
 	</div>
 
-	<?php if($this->test || $this->hasText): ?>
-		<div class="project_full__content">
-			<div class="project_full__data">
 
+	<div class="project_full__content">
 
-				<div class="project_full__gallery">
-					<?php foreach ($this->test as $image): ?>
-						<div class="project_full__gallery-item <?= $image->class ?>">
-							<figure class="image_container"<?php if ($image->margin): ?> style="<?= $image->margin ?>"<?php endif; ?>>
-								<?php if ($image->href): ?>
-									<a href="<?= $image->href ?>"<?= $image->attributes ?><?php if ($image->linkTitle): ?> title="<?= $image->linkTitle ?>"<?php endif; ?>><?php $this->insert('picture_default', $image->picture); ?></a>
-								<?php else: ?>
-									<?php $this->insert('picture_default', $image->picture); ?>
-								<?php endif; ?>
-									<?php if ($image->caption): ?>
-									<figcaption class="caption"><?= $image->caption ?></figcaption>
-								<?php endif; ?>
-							</figure>
-						</div>
-					<?php endforeach; ?>
-				</div>
-
-				<?php if ($this->hasText): ?>
-					<div class="project_full__text">
-						<?= $this->text ?>
-					</div>
-				<?php endif; ?>
-
-
+		<?php if ($this->hasText): ?>
+			<div class="project_full__text">
+				<?= $this->text ?>
 			</div>
 		<?php endif; ?>
+
+		<?php if($this->gallery): ?>
+			<div class="project_full__gallery">
+				<?php foreach ($this->gallery as $image): ?>
+					<div class="project_full__gallery-item">
+						<?php $this->insert('image', (array) $image); ?>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+
+	</div>
 
 		<?php if ($this->enclosure): ?>
 			<div class="project_full__enclosures">

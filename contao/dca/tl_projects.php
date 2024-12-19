@@ -438,21 +438,31 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'reference'               => &$GLOBALS['TL_LANG']['MSC'],
 			'sql'                     => "varchar(12) NOT NULL default 'above'"
 		),
+		// 'multiSRC' => array
+		// (
+		// 	'exclude'                 => true,
+		// 	'inputType'               => 'fileTree',
+		// 	'eval'                    => array(
+		// 		'multiple' => true, 
+		// 		'fieldType' => 'checkbox', 
+		// 		'orderField' => 'orderSRC', 
+		// 		'files' => true, 
+		// 		'extensions' => Config::get('validImageTypes'),
+		// 		'isGallery' => true,
+		// 		'tl_class' => 'clr'
+		// 	),
+		// 	'sql'                     => "blob NULL"
+		// ),
 		'multiSRC' => array
 		(
-			'exclude'                 => true,
 			'inputType'               => 'fileTree',
-			'eval'                    => array(
-				'multiple' => true, 
-				'fieldType' => 'checkbox', 
-				'orderField' => 'orderSRC', 
-				'files' => true, 
-				'extensions' => Config::get('validImageTypes'),
-				'isGallery' => true,
-				'tl_class' => 'clr'
-			),
+			'eval'                    => array('multiple'=>true, 'fieldType'=>'checkbox', 'isSortable' => true, 'files'=>true,'isGallery' => true,'extensions' => Config::get('validImageTypes')),
 			'sql'                     => "blob NULL"
-		),
+			// 'load_callback' => array
+			// (
+			// 	array('tl_projects', 'setMultiSrcFlags')
+			// )
+		),		
 		'orderSRC' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['MSC']['sortOrder'],
@@ -1101,6 +1111,50 @@ class tl_projects extends Backend
 
 		return array_merge($tags, array('contao.sitemap.' . $pageModel->rootId));
 	}
+
+
+
+
+
+	/**
+	 * Dynamically add flags to the "multiSRC" field
+	 *
+	 * @param mixed         $varValue
+	 * @param DataContainer $dc
+	 *
+	 * @return mixed
+	 */
+	public function setMultiSrcFlags($varValue, DataContainer $dc)
+	{
+		dump($dc->activeRecord->type);
+		if ($dc->activeRecord)
+		{
+			dump($dc->activeRecord->type);
+			switch ($dc->activeRecord->type)
+			{
+				case 'gallery':
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['isGallery'] = true;
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['extensions'] = '%contao.image.valid_extensions%';
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['mandatory'] = !$dc->activeRecord->useHomeDir;
+					break;
+
+				case 'downloads':
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['isDownloads'] = true;
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['extensions'] = Config::get('allowedDownload');
+					$GLOBALS['TL_DCA'][$dc->table]['fields'][$dc->field]['eval']['mandatory'] = !$dc->activeRecord->useHomeDir;
+					break;
+			}
+		}
+
+		return $varValue;
+	}
+
+
+
+
+
+
+
 
 
 }
