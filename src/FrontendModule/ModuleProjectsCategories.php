@@ -190,6 +190,7 @@ abstract class ModuleProjectsCategories extends ModuleProjects
      */
     protected function getInactiveCategories(array $customCategories = [])
     {
+        
         $excludedIds = [];
 
         // Find only the categories that still can display some results combined with active categories
@@ -205,6 +206,8 @@ abstract class ModuleProjectsCategories extends ModuleProjects
                 // Collect the projects that match all active categories
                 /** @var ProjectsCategoryModel $activeCategory */
                 foreach ($this->activeCategories as $activeCategory) {
+                    
+                    // $criteria = System::getContainer()->get(NewsCriteriaBuilder::class)->create($this->news_archives);
                     $criteria = new ProjectsCriteria(System::getContainer()->get('contao.framework'));
 
                     try {

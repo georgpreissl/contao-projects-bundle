@@ -25,6 +25,7 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['projectslist'] = '
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsreader']  = '
 {title_legend},name,headline,type;
 {config_legend},projects_archives;
+{projects_overview_legend},overviewPage,customLabel;
 {projects_related_legend},projects_showRelated;
 {template_legend:hide},projects_metaFields,projects_template,customTpl;
 {image_legend:hide},imgSize;
@@ -381,6 +382,13 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_order'] = array
 	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default 'order_date_desc'"
 );
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_keepCanonical'] = array
+(
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => array('type' => 'boolean', 'default' => false)
+);
+
 // $GLOBALS['TL_DCA']['tl_module']['fields']['projects_order']['options_callback'] = function (DataContainer $dc) {
 // 	if ($dc->activeRecord && 'sibling_navigation_projects' === $dc->activeRecord->type) {
 // 		return ['order_date_asc', 'order_date_desc', 'order_headline_asc', 'order_headline_desc'];
@@ -483,8 +491,7 @@ class tl_module_projects extends Backend
 	public function getReaderModules()
 	{
 		$arrModules = array();
-		$objModules = $this->Database->execute("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE m.type='projectreader' ORDER BY t.name, m.name");
-
+		$objModules = $this->Database->execute("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE m.type='projectsreader' ORDER BY t.name, m.name");
 		while ($objModules->next())
 		{
 			$arrModules[$objModules->theme][$objModules->id] = $objModules->name . ' (ID ' . $objModules->id . ')';

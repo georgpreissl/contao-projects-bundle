@@ -41,6 +41,14 @@
         <source>&amp;gt;</source>
         <target>&amp;gt;</target>
       </trans-unit>
+      <trans-unit id="MSC.projects_resetCategories.0">
+        <source>Show all</source>
+        <target>Alle anzeigen</target>
+      </trans-unit>
+      <trans-unit id="MSC.projects_resetCategories.1">
+        <source>bbbb</source>
+        <target>bbbb</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

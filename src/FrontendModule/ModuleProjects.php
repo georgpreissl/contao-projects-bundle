@@ -4,27 +4,31 @@
 
 namespace GeorgPreissl\Projects\FrontendModule;
 
-use Contao\ArrayUtil;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Module;
 use Contao\Date;
 use Contao\FrontendTemplate;
 use Contao\FilesModel;
+use Contao\PageModel;
 use Contao\ContentModel;
 use Contao\CommentsModel;
 use Contao\File;
 use GeorgPreissl\Projects\Projects;
+use GeorgPreissl\Projects\ProjectsCategoriesManager;
 use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use GeorgPreissl\Projects\Model\ProjectsArchiveModel;
 use GeorgPreissl\Projects\Model\ProjectsModel;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
+use Contao\CoreBundle\Routing\ContentUrlGenerator;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 
 abstract class ModuleProjects extends Module
 {
 
 
-	private static $arrUrlCache = array();
+	// private static $arrUrlCache = array();
 
 
 	protected function sortOutProtected($arrArchives)
@@ -67,12 +71,22 @@ abstract class ModuleProjects extends Module
 	 */
 	protected function parseProject($objProject, $blnAddArchive=false, $strClass='', $intCount=0)
 	{
-		/** @var \PageModel $objPage */
 		global $objPage;
 
-		/** @var \FrontendTemplate|object $objTemplate */
-		$objTemplate = new FrontendTemplate($this->projects_template);
+		$objTemplate = new FrontendTemplate($this->projects_template ?: 'project_latest');
 		$objTemplate->setData($objProject->row());
+
+		if ($objProject->cssClass)
+		{
+			$strClass = ' ' . $objProject->cssClass . $strClass;
+		}
+
+		if ($objProject->featured)
+		{
+			$strClass = ' featured' . $strClass;
+		}
+		
+		$url = $this->generateContentUrl($objProject, $blnAddArchive);
 
 		// parse the gallery
 		$this->multiSRC = StringUtil::deserialize($objProject->multiSRC);
@@ -212,7 +226,6 @@ abstract class ModuleProjects extends Module
 				// no break
 
 			case 'custom':
-				// $images = ArrayUtil::sortByOrderField($images, $objProject->orderSRC);
 				break;
 
 			case 'random':
@@ -259,10 +272,10 @@ abstract class ModuleProjects extends Module
 				$arrGallery[] = (object) $cellData;
 
 		}
-
+// dump($intCount);
 		$objTemplate->gallery = $arrGallery;
 
-		$objTemplate->class = (($objProject->cssClass != '') ? ' ' . $objProject->cssClass : '') . $strClass;
+		$objTemplate->class = $strClass;
 		$objTemplate->projectHeadline = $objProject->headline;
 		$objTemplate->subHeadline = $objProject->subheadline;
 		$objTemplate->hasSubHeadline = $objProject->subheadline ? true : false;
@@ -273,40 +286,33 @@ abstract class ModuleProjects extends Module
 		$objTemplate->hasTotalArea = $objProject->totalArea ? true : false;
 		$objTemplate->hasOrderValue = $objProject->orderValue ? true : false;
 		$objTemplate->hasShare = $objProject->share ? true : false;
-		$objTemplate->linkHeadline = $this->generateLink($objProject->headline, $objProject, $blnAddArchive);
-		$objTemplate->more = $this->generateLink($GLOBALS['TL_LANG']['MSC']['more'], $objProject, $blnAddArchive, true);
-		$objTemplate->link = Projects::generateProjectUrl($objProject, $blnAddArchive);
-		// $objTemplate->archive = $objProject->getRelated('pid');
+		$objTemplate->archive = ProjectsArchiveModel::findById($objProject->pid);
 		$objTemplate->count = $intCount; // see #5708
 		$objTemplate->text = '';
 		$objTemplate->hasText = true;
 		$objTemplate->hasTeaser = false;
 
-		// Clean the RTE output
-		if ($objProject->teaser != '')
+		if (null !== $url)
 		{
-			$objTemplate->hasTeaser = true;
-
-			if ($objPage->outputFormat == 'xhtml')
-			{
-				$objTemplate->teaser = StringUtil::toXhtml($objProject->teaser);
-			}
-			else
-			{
-				$objTemplate->teaser = StringUtil::toHtml5($objProject->teaser);
-			}
-
-			$objTemplate->teaser = StringUtil::encodeEmail($objTemplate->teaser);
+			$objTemplate->linkHeadline = $this->generateLink($objProject->headline, $objProject, $blnAddArchive);
+			$objTemplate->more = $this->generateLink($objProject->linkText ?: $GLOBALS['TL_LANG']['MSC']['more'], $objProject, $blnAddArchive, true);
+			$objTemplate->link = $url;
 		}
 
-$objProject->source = 'default';
+		// Clean the RTE output
+		if ($objProject->teaser)
+		{
+			$objTemplate->hasTeaser = true;
+			$objTemplate->teaser = $objArticle->teaser;
+			$objTemplate->teaser = StringUtil::encodeEmail($objTemplate->teaser);
+		}
 
 		// Display the "read more" button for external/article links
 		if ($objProject->source != 'default')
 		{
 			$objTemplate->text = true;
-			$objTemplate->hasText = true;
-			// var_dump("jo");
+			$objTemplate->hasText = null !== $url;
+			$objTemplate->hasReader = false;
 		}
 
 		// Compile the project text
@@ -333,18 +339,17 @@ $objProject->source = 'default';
 			$objTemplate->hasText = (ContentModel::countPublishedByPidAndTable($objProject->id, 'tl_projects') > 0);
 		}
 
-		$arrMeta = $this->getMetaFields($objProject);
+		
 
 		// Add the meta information
-		// $objTemplate->date = $arrMeta['date'];
-		$objTemplate->hasMetaFields = !empty($arrMeta);
-		// $objTemplate->numberOfComments = $arrMeta['ccount'];
-		// $objTemplate->commentCount = $arrMeta['comments'];
 		$objTemplate->timestamp = $objProject->date;
-		// $objTemplate->author = $arrMeta['author'];
 		$objTemplate->datetime = date('Y-m-d\TH:i:sP', $objProject->date);
-
 		$objTemplate->addImage = false;
+		// dump($objTemplate->target);
+
+		// $arrMeta = $this->getMetaFields($objProject);
+		// $objTemplate->hasMetaFields = !empty($arrMeta);
+
 
 		// Add an image
 		if ($objProject->addImage)
@@ -378,7 +383,7 @@ $objProject->source = 'default';
 
 			if (null !== ($figure = $figureBuilder->buildIfResourceExists()))
 			{
-				// Rebuild with link to the news article if we are not in a
+				// Rebuild with link to the project if we are not in a
 				// newsreader and there is no link yet. $intCount will only be
 				// set by the news list and news archive modules (see #5851).
 				if ($intCount > 0 && !$figure->getLinkHref())
@@ -403,102 +408,56 @@ $objProject->source = 'default';
 			$this->addEnclosuresToTemplate($objTemplate, $objProject->row());
 		}
 
+		// schema.org information
+		$objTemplate->getSchemaOrgData = static function () use ($objProject, $objTemplate): array {
+			$jsonLd = Projects::getSchemaOrgData($objProject);
 
+			if ($objTemplate->addImage && $objTemplate->figure)
+			{
+				$jsonLd['image'] = $objTemplate->figure->getSchemaOrgData();
+			}
 
-$arrData = $objProject->row();
+			return $jsonLd;
+		};
+
+		$arrData = $objProject->row();
 		// $arrData enthält alle Infos zu einem Projekt
 		// dump($arrData);
-        // diese Funktion wir für jede aufgelistete Referenz einmal ausgeführt!
-
-		// dump($arrData['categories']);
-		// dump($objProject->categories);
-
-        if (isset($arrData['categories'])) {
-
-            // $arrData['categories']
-            // e.g.: string(18) "a:1:{i:0;s:1:"1";}"
+        
 
 
-            $arrCategories = array();
-            $arrCategoriesList = array();
 
-            $categories = StringUtil::deserialize($arrData['categories']);
-            // e.g.: Array
-            // (
-            //     [0] => 5
-            //     [1] => 2
-            // )
-            // d.h. dieses Projekt ist in den Kategorien mit der ID 5 und 2
-
-            if (is_array($categories) && !empty($categories)) {
-
-                // $strClass = \GeorgPreissl\ProjectsCategories\ProjectsCategories::getModelClass();
-                // string(21) "\ProjectCategoryModel" 
-                
-                $objCategories = ProjectsCategoryModel::findPublishedByIds($categories);
-				// dump($objCategories);
-                
-                // Add the categories to template
-                if ($objCategories !== null) {
-                    /** @var ProjectCategoryModel $objCategory */
-                    foreach ($objCategories as $objCategory) {
-
-                        $strName = $objCategory->frontendTitle ? $objCategory->frontendTitle : $objCategory->title;
-                        // e.g.: string(7) "Holzbau" 
-
-                        $arrCategories[$objCategory->id] = $objCategory->row();
-                        $arrCategories[$objCategory->id]['name'] = $strName;
-                        $arrCategories[$objCategory->id]['class'] = 'category_' . $objCategory->id . ($objCategory->cssClass ? (' ' . $objCategory->cssClass) : '');
-                        $arrCategories[$objCategory->id]['linkTitle'] = StringUtil::specialchars($strName);
-                        $arrCategories[$objCategory->id]['href'] = '';
-                        $arrCategories[$objCategory->id]['hrefWithParam'] = '';
-                        $arrCategories[$objCategory->id]['targetPage'] = null;
-
-                        // Add the target page
-                        // if (($targetPage = $objCategory->getTargetPage()) !== null) {
-                        //     $arrCategories[$objCategory->id]['href'] = $targetPage->getFrontendUrl();
-                        //     $arrCategories[$objCategory->id]['hrefWithParam'] = $targetPage->getFrontendUrl('/' . ProjectsCategories::getParameterName() . '/' . $objCategory->alias);
-                        //     $arrCategories[$objCategory->id]['targetPage'] = $targetPage;
-                        // }
-
-                        // Register a function to generate category URL manually
-                        $arrCategories[$objCategory->id]['getUrl'] = function(PageModel $page) use ($objCategory) {
-                            return $objCategory->getUrl($page);
-                        };
-
-                        // Generate categories list
-                        $arrCategoriesList[$objCategory->id] = $strName;
-                    }
-
-                    // Sort the category list alphabetically
-                    asort($arrCategoriesList);
-
-                    // Sort the categories alphabetically
-                    uasort($arrCategories, function($a, $b) {
-                        return strnatcasecmp($a['name'], $b['name']);
-                    });
-                }
-            }
-
-			// dump($objTemplate);
-
-            // $arrCategoriesList e.g.:
-            // Array
-            // (
-            //     [5] => Alle
-            //     [2] => Holzbau
-            // )       
-
-            $objTemplate->projectCategories = $arrCategories;
-            $objTemplate->projectCategoriesList = $arrCategoriesList;
-        }
 
 		
+		$categories = ProjectsCategoryModel::findPublishedByProject($arrData['id']);
 
+		if($categories !== null){
 
+			// to generate the category links on the details page, we need the page where the projects are listed
+			$objOverviewPage = PageModel::findPublishedById($this->overviewPage);
 
+			// use the manager for category specific links
+			$this->manager = System::getContainer()->get(ProjectsCategoriesManager::class);
 
-
+			$arrCategories = array();
+			foreach ($categories as $category) {
+				if (null !== ($targetPage = $this->manager->getTargetPage($category))) {
+					$url = $targetPage->getFrontendUrl();
+				} else {
+					if (null !== $objOverviewPage) {
+						$url = $this->manager->generateUrl($category, $objOverviewPage);
+					}
+				}
+				$arrCategory = array();
+				$arrCategory['url'] = $url;		
+				$arrCategory['title'] = $category->frontendTitle ? $category->frontendTitle : $category->title;
+				$arrCategory['cssClass'] = $category->cssClass;			
+				$arrCategories[] = $arrCategory;
+			}
+			$objTemplate->categories = $arrCategories;	
+		}
+		
+	
 
 		return $objTemplate->parse();
 	}
@@ -614,45 +573,50 @@ $arrData = $objProject->row();
 	/**
 	 * Generate a link and return it as string
 	 *
-	 * @param string     $strLink
-	 * @param \ProjectModel $objProject
-	 * @param boolean    $blnAddArchive
-	 * @param boolean    $blnIsReadMore
+	 * @param string    $strLink
+	 * @param NewsModel $objArticle
+	 * @param boolean   $blnAddArchive
+	 * @param boolean   $blnIsReadMore
 	 *
 	 * @return string
 	 */
-	protected function generateLink($strLink, $objProject, $blnAddArchive=false, $blnIsReadMore=false)
+	protected function generateLink($strLink, $objArticle, $blnAddArchive=false, $blnIsReadMore=false)
 	{
-		// Internal link
-		if ($objProject->source != 'external')
-		{
-			return sprintf('<a href="%s" title="%s">%s%s</a>',
-							$this->generateProjectUrl($objProject, $blnAddArchive),
-							StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['readMore'], $objProject->headline), true),
-							$strLink,
-							($blnIsReadMore ? '<span class="invisible"> '.$objProject->headline.'</span>' : ''));
-		}
+		$blnIsInternal = $objArticle->source != 'external';
+		// dump($blnIsInternal);
+		$strReadMore = $blnIsInternal ? $GLOBALS['TL_LANG']['MSC']['readMore'] : $GLOBALS['TL_LANG']['MSC']['open'];
+		$strArticleUrl = $this->generateContentUrl($objArticle, $blnAddArchive);
 
-		// Encode e-mail addresses
-		if (substr($objProject->url, 0, 7) == 'mailto:')
-		{
-			$strArticleUrl = StringUtil::encodeEmail($objProject->url);
-		}
-
-		// Ampersand URIs
-		else
-		{
-			$strArticleUrl = ampersand($objProject->url);
-		}
-
-		/** @var \PageModel $objPage */
-		global $objPage;
-
-		// External link
-		return sprintf('<a href="%s" title="%s"%s>%s</a>',
-						$strArticleUrl,
-						StringUtil::specialchars(sprintf($GLOBALS['TL_LANG']['MSC']['open'], $strArticleUrl)),
-						($objProject->target ? (($objPage->outputFormat == 'xhtml') ? ' onclick="return !window.open(this.href)"' : ' target="_blank"') : ''),
-						$strLink);
+		return \sprintf(
+			'<a href="%s" title="%s"%s>%s%s</a>',
+			$strArticleUrl,
+			StringUtil::specialchars(\sprintf($strReadMore, $blnIsInternal ? $objArticle->headline : $strArticleUrl), true),
+			$objArticle->target && !$blnIsInternal ? ' target="_blank" rel="noreferrer noopener"' : '',
+			$strLink,
+			$blnIsReadMore && $blnIsInternal ? '<span class="invisible"> ' . $objArticle->headline . '</span>' : ''
+		);
 	}
+
+	private function generateContentUrl(ProjectsModel $content, bool $addArchive): string|null
+	{
+		
+		$parameters = array();
+
+		// Add the current archive parameter (projects archive)
+		if ($addArchive && Input::get('month'))
+		{
+			$parameters['month'] = Input::get('month');
+		}
+		
+		try
+		{
+			return System::getContainer()->get('contao.routing.content_url_generator')->generate($content, $parameters);
+		}
+		catch (ExceptionInterface)
+		{
+			return null;
+		}
+	}
+
+
 }

@@ -11,6 +11,7 @@ use Contao\Input;
 use Contao\Config;
 use Contao\Pagination;
 use GeorgPreissl\Projects\Model\ProjectsModel;
+use GeorgPreissl\Projects\Criteria\ProjectsCriteriaBuilder;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Model\Collection;
 
@@ -48,43 +49,24 @@ class ModuleProjectsList extends ModuleProjects
 		$this->projects_archives = $this->sortOutProtected(StringUtil::deserialize($this->projects_archives));
 
 		// Return if there are no archives
-		if (!is_array($this->projects_archives) || empty($this->projects_archives))
+		if (empty($this->projects_archives) || !\is_array($this->projects_archives))
 		{
 			return '';
 		}
 
-		// if ($this->projects_relatedOnly) {
-		// 	$projectAlias = Input::get('auto_item', false, true);
-		// 	$project = NewsModel::findByAlias($newsAlias);
-        //     dump($projectAlias);
-        // }		
-
-
-
-
-        // $this->projects_filterCategories);
-        // string(1) "1" 
-
-        $GLOBALS['PROJECT_FILTER_CATEGORIES'] = $this->projects_filterCategories ? true : false;
-        // bool(true) 
-
-        $GLOBALS['PROJECT_FILTER_DEFAULT']    = StringUtil::deserialize($this->projects_filterDefault, true);
-        // array(1) { [0]=> string(1) "5" } 
-
-        $GLOBALS['PROJECT_FILTER_PRESERVE']   = $this->projects_filterPreserve;
-        // string(0) "" 
-
+		// If list module and reader module are on the same page and an project has been selected
+		if ($this->projects_readerModule > 0 && Input::get('auto_item') !== null)
+		{
+			return $this->getFrontendModule($this->projects_readerModule, $this->strColumn);
+		}
 
         // Generate the list in related categories mode
         if ($this->projects_relatedCategories) {
             return $this->generateRelated();
         }
 
-
 		return parent::generate();
 
-        // Cleanup the $GLOBALS array (see #57)
-        unset($GLOBALS['PROJECT_FILTER_CATEGORIES'], $GLOBALS['PROJECT_FILTER_DEFAULT'], $GLOBALS['PROJECT_FILTER_PRESERVE']);
 
 	}
 
@@ -123,6 +105,7 @@ class ModuleProjectsList extends ModuleProjects
 
 		// Get the total number of items
 		$intTotal = $this->countItems($this->projects_archives, $blnFeatured);
+	
 				
 		if ($intTotal < 1)
 		{
@@ -172,12 +155,11 @@ class ModuleProjectsList extends ModuleProjects
 		}
 
 		$objProjects = $this->fetchItems($this->projects_archives, $blnFeatured, ($limit ?: 0), $offset);
-		// $objProjects = $this->fetchItems($blnFeatured, ($limit ?: 0), $offset);
 
-		// Add the articles
+		// Add the projects
 		if ($objProjects !== null)
 		{
-			$this->Template->articles = $this->parseProjects($objProjects);
+			$this->Template->projects = $this->parseProjects($objProjects);
 		}
 		
 		$this->Template->archives = $this->projects_archives;
@@ -197,25 +179,17 @@ class ModuleProjectsList extends ModuleProjects
 	protected function countItems($projectArchives, $blnFeatured)
 	{
 		
-		// HOOK: add custom logic
-		if (isset($GLOBALS['TL_HOOKS']['projectsListCountItems']) && \is_array($GLOBALS['TL_HOOKS']['projectsListCountItems']))
-		{
-			foreach ($GLOBALS['TL_HOOKS']['projectsListCountItems'] as $callback)
-			{
-				if (($intResult = System::importStatic($callback[0])->{$callback[1]}($projectArchives, $blnFeatured, $this)) === false)
-				{
-					continue;
-				}
+        try {
+            $criteria = System::getContainer()->get(ProjectsCriteriaBuilder::class)->getCriteriaForListModule($projectArchives, $blnFeatured, $this);
+        } catch (CategoryNotFoundException $e) {
+            throw new PageNotFoundException($e->getMessage(), 0, $e);
+        }
 
-				if (\is_int($intResult))
-				{
-					return $intResult;
-				}
-			}
-		}
-		
-		return ProjectsModel::countPublishedByPids($projectArchives, $blnFeatured);
-		// return ProjectsModel::countPublished($blnFeatured);
+        if (null === $criteria) {
+            return 0;
+        }
+
+		return ProjectsModel::countBy($criteria->getColumns(), $criteria->getValues());
 	}
 
 
@@ -230,102 +204,54 @@ class ModuleProjectsList extends ModuleProjects
 	 * @return \Model\Collection|\ProjectModel|null
 	 */
 	protected function fetchItems($projectArchives, $blnFeatured, $limit, $offset)
-	// protected function fetchItems($blnFeatured, $limit, $offset)
 	{
-		
-		// HOOK: add custom logic
-		if (isset($GLOBALS['TL_HOOKS']['projectsListFetchItems']) && \is_array($GLOBALS['TL_HOOKS']['projectsListFetchItems']))
-		{
-			foreach ($GLOBALS['TL_HOOKS']['projectsListFetchItems'] as $callback)
-			{
-				
-				if (($objCollection = System::importStatic($callback[0])->{$callback[1]}($projectArchives, $blnFeatured, $limit, $offset, $this)) === false)
-				{
-					
-					continue;
+
+        try {
+            $criteria = System::getContainer()->get(ProjectsCriteriaBuilder::class)->getCriteriaForListModule($projectArchives, $blnFeatured, $this);
+
+			/*
+			Wenn die Kategorie Türme ausgewählt wurde,
+			und zwei Projekte (mit der ID 8 und 14) in dieser Kategorie sind,
+			dann sieht $criteria so aus:
+
+			GeorgPreissl\Projects\Criteria\ProjectsCriteria {#2452 ▼
+				-columns: array:3 [▼
+					0 => "tl_projects.pid IN(1)"
+					1 => "tl_projects.published=? AND (tl_projects.start=? OR tl_projects.start<=?) AND (tl_projects.stop=? OR tl_projects.stop>?)"
+					2 => "tl_projects.id IN(8,14)"
+				]
+				-values: array:5 [▼
+					0 => 1
+					1 => ""
+					2 => 1737636060
+					3 => ""
+					4 => 1737636060
+				]
+				-options: array:1 [▼
+					"order" => "tl_projects.sorting"
+				]
+				...
 				}
+			*/
 
-				if ($objCollection === null || $objCollection instanceof Collection)
-				{
-					return $objCollection;
-				}
-			}
-		}
-		
-		// Determine sorting
-		$t = ProjectsModel::getTable();
-		
-		$order = '';
 
-		if ($this->projects_featured == 'featured_first')
-		{
-			$order .= "$t.featured DESC, ";
-		}
-		
-		switch ($this->projects_order)
-		{
+        } catch (CategoryNotFoundException $e) {
+            throw new PageNotFoundException($e->getMessage(), 0, $e);
+        }
 
-			
-			case 'order_sorting_asc':
-				$order .= "$t.sorting";
-				break;
+        if (null === $criteria) {
+            return null;
+        }
 
-			case 'order_sorting_desc':
-				$order .= "$t.sorting DESC";
-				break;
+        $criteria->setLimit($limit);
+        $criteria->setOffset($offset);
 
-			case 'order_user_asc':
-				$order .= "$t.sorting";
-				break;
+        return ProjectsModel::findBy(
+            $criteria->getColumns(),
+            $criteria->getValues(),
+            $criteria->getOptions(),
+        );		
 
-			case 'order_user_desc':
-				$order .= "$t.sorting DESC";
-				break;
-
-			case 'order_headline_asc':
-				$order .= "$t.headline";
-				break;
-
-			case 'order_headline_desc':
-				$order .= "$t.headline DESC";
-				break;
-
-			case 'order_random':
-				$order .= "RAND()";
-				break;
-
-			case 'order_date_asc':
-				$order .= "$t.date";
-				break;
-
-			default:
-				$order .= "$t.date DESC";
-		}
-
-		
-        // Generate the list in related categories mode
-        if ($this->projects_relatedCategories) {
-			$alias = Input::get('items') ?: Input::get('auto_item');
-
-			// Return if the project item was not found
-			// if (($project = ProjectsModel::findPublishedByParentAndIdOrAlias($alias, $this->projects_archives)) === null) {
-			// 	return null;
-			// }
-			$project = ProjectsModel::findPublishedByParentAndIdOrAlias($alias, $this->projects_archives);
-            $id = $project->id;
-			// $xx = ProjectsModel::findMultipleByIds([9,12,8]);
-			$categories = ProjectsCategoryModel::findPublishedByProjects($id);
-			foreach ($categories as $cat) {
-				dump($cat);
-			}
-			// dump($categories);
-			return '';
-
-        } else {
-
-			return ProjectsModel::findPublishedByPids($projectArchives, $blnFeatured, $limit, $offset, array('order'=>$order));
-			// return ProjectsModel::findPublished($blnFeatured, $limit, $offset, array('order'=>$order));
-		}
 	}
 
 

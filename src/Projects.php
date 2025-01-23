@@ -9,109 +9,15 @@ use Contao\StringUtil;
 use Contao\Environment;
 use Contao\Frontend;
 use Contao\ArticleModel;
+use Contao\System;
+use Contao\UserModel;
+use GeorgPreissl\Projects\Model\ProjectsModel;
+use Symfony\Component\Routing\Exception\ExceptionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 class Projects extends Frontend
 {
-	/**
-	 * URL cache array
-	 * @var array
-	 */
-	private static $arrUrlCache = array();    
-
-	/**
-	 * Page cache array
-	 * @var array
-	 */
-	private static $arrPageCache = array();
-
-	/**
-	 * Add project items to the indexer
-	 *
-	 * @param array   $arrPages
-	 * @param integer $intRoot
-	 * @param boolean $blnIsSitemap
-	 *
-	 * @return array
-	 */
-	public function getSearchablePages($arrPages, $intRoot=0, $blnIsSitemap=false)
-	{
-		$arrRoot = array();
-
-		if ($intRoot > 0)
-		{
-			$arrRoot = $this->Database->getChildRecords($intRoot, 'tl_page');
-		}
-
-		$arrProcessed = array();
-		$time = time();
-
-		// Get all project archives
-		$objArchive = ProjectsArchiveModel::findByProtected('');
-
-		// Walk through each archive
-		if ($objArchive !== null)
-		{
-			while ($objArchive->next())
-			{
-				// Skip project archives without target page
-				if (!$objArchive->jumpTo)
-				{
-					continue;
-				}
-
-				// Skip project archives outside the root nodes
-				if (!empty($arrRoot) && !in_array($objArchive->jumpTo, $arrRoot))
-				{
-					continue;
-				}
-
-				// Get the URL of the jumpTo page
-				if (!isset($arrProcessed[$objArchive->jumpTo]))
-				{
-					$objParent = \PageModel::findByPk($objArchive->jumpTo);
-
-					// The target page does not exist
-					if ($objParent === null)
-					{
-						continue;
-					}
-
-					// The target page has not been published (see #5520)
-					if (!$objParent->published || ($objParent->start != '' && $objParent->start > $time) || ($objParent->stop != '' && $objParent->stop <= ($time + 60)))
-					{
-						continue;
-					}
-
-					// The target page is exempt from the sitemap (see #6418)
-					if ($blnIsSitemap && $objParent->sitemap == 'map_never')
-					{
-						continue;
-					}
-
-					// Generate the URL
-					$arrProcessed[$objArchive->jumpTo] = $objParent->getAbsoluteUrl((\Config::get('useAutoItem') && !\Config::get('disableAlias')) ? '/%s' : '/items/%s');
-				}
-
-				$strUrl = $arrProcessed[$objArchive->jumpTo];
-                
-				// Get the items
-				$objArticle = ProjectsModel::findPublishedDefaultByPid($objArchive->id);
-
-				if ($objArticle !== null)
-				{
-					while ($objArticle->next())
-					{
-						$arrPages[] = $this->getLink($objArticle, $strUrl);
-					}
-				}
-			}
-		}
-
-		return $arrPages;
-	}
-
-
 
 
 	/**
@@ -125,76 +31,29 @@ class Projects extends Frontend
 	 */
 	public static function generateProjectUrl($objItem, $blnAddArchive=false, $blnAbsolute=false)
 	{
-		$strCacheKey = 'id_' . $objItem->id . ($blnAbsolute ? '_absolute' : '') . (($blnAddArchive && Input::get('month')) ? '_' . Input::get('month') : '');
 
-		// Load the URL from cache
-		if (isset(self::$arrUrlCache[$strCacheKey]))
+		trigger_deprecation('contao/core-bundle', '5.3', 'Using "%s()" has been deprecated and will no longer work in Contao 6. Use the content URL generator instead.', __METHOD__);
+
+		try
 		{
-			return self::$arrUrlCache[$strCacheKey];
-		}
-
-		// Initialize the cache
-		self::$arrUrlCache[$strCacheKey] = null;
-
-		switch ($objItem->source)
-		{
-			// Link to an external page
-			case 'external':
-				if (0 === strncmp($objItem->url, 'mailto:', 7))
-				{
-					self::$arrUrlCache[$strCacheKey] = StringUtil::encodeEmail($objItem->url);
-				}
-				else
-				{
-					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($objItem->url);
-				}
-				break;
-
-			// Link to an internal page
-			case 'internal':
-				if (($objTarget = $objItem->getRelated('jumpTo')) instanceof PageModel)
-				{
-					/** @var PageModel $objTarget */
-					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objTarget->getAbsoluteUrl() : $objTarget->getFrontendUrl());
-				}
-				break;
-
-			// Link to an article
-			case 'article':
-				if (($objArticle = ArticleModel::findByPk($objItem->articleId)) instanceof ArticleModel && ($objPid = $objArticle->getRelated('pid')) instanceof PageModel)
-				{
-					$params = '/articles/' . ($objArticle->alias ?: $objArticle->id);
-
-					/** @var PageModel $objPid */
-					self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objPid->getAbsoluteUrl($params) : $objPid->getFrontendUrl($params));
-				}
-				break;
-		}
-
-		// Link to the default page
-		if (self::$arrUrlCache[$strCacheKey] === null)
-		{
-			$objPage = PageModel::findByPk($objItem->getRelated('pid')->jumpTo);
-
-			if (!$objPage instanceof PageModel)
-			{
-				self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand(Environment::get('request'));
-			}
-			else
-			{
-				$params = (Config::get('useAutoItem') ? '/' : '/items/') . ($objItem->alias ?: $objItem->id);
-
-				self::$arrUrlCache[$strCacheKey] = StringUtil::ampersand($blnAbsolute ? $objPage->getAbsoluteUrl($params) : $objPage->getFrontendUrl($params));
-			}
+			$parameters = array();
 
 			// Add the current archive parameter (news archive)
 			if ($blnAddArchive && Input::get('month'))
 			{
-				self::$arrUrlCache[$strCacheKey] .= '?month=' . Input::get('month');
+				$parameters['month'] = Input::get('month');
 			}
+
+			$url = System::getContainer()->get('contao.routing.content_url_generator')->generate($objItem, $parameters, $blnAbsolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH);
+		}
+		catch (ExceptionInterface)
+		{
+			return StringUtil::ampersand(Environment::get('requestUri'));
 		}
 
-		return self::$arrUrlCache[$strCacheKey];
+		return $url;
+
+
 	}
 
 
@@ -203,7 +62,54 @@ class Projects extends Frontend
 
 
 
+	/**
+	 * Return the schema.org data from a project
+	 *
+	 * @param ProjectsModel $objProject
+	 *
+	 * @return array
+	 */
+	public static function getSchemaOrgData(ProjectsModel $objProject): array
+	{
+		$htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
+		$urlGenerator = System::getContainer()->get('contao.routing.content_url_generator');
 
+		$jsonLd = array(
+			'@type' => 'Project',
+			'identifier' => '#/schema/project/' . $objProject->id,
+			'headline' => $htmlDecoder->inputEncodedToPlainText($objProject->headline),
+			'datePublished' => date('Y-m-d\TH:i:sP', $objProject->date),
+		);
+
+		try
+		{
+			$jsonLd['url'] = $urlGenerator->generate($objProject);
+		}
+		catch (ExceptionInterface)
+		{
+			// noop
+		}
+
+		if ($objProject->location)
+		{
+			$jsonLd['location'] = $htmlDecoder->inputEncodedToPlainText($objProject->location);
+		}
+
+		if ($objProject->teaser)
+		{
+			$jsonLd['description'] = $htmlDecoder->htmlToPlainText($objProject->teaser);
+		}
+
+		if ($objAuthor = UserModel::findById($objProject->author))
+		{
+			$jsonLd['author'] = array(
+				'@type' => 'Person',
+				'name' => $objAuthor->name,
+			);
+		}
+
+		return $jsonLd;
+	}
 
 
 

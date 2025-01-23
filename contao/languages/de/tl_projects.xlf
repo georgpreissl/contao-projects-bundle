@@ -73,8 +73,16 @@
         <source>Here you can enter a subheadline.</source>
         <target>Hier können Sie eine Unterüberschrift eingeben.</target>
       </trans-unit>
+      <trans-unit id="tl_projects.canonicalLink.0">
+        <source>Canonical URL</source>
+        <target>Kanonische URL</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.canonicalLink.1">
+        <source>Here you can set a custom canonical URL like https://example.com/.</source>
+        <target>Hier können Sie eine individuelle kanonische URL wie z. B. https://example.com/ setzen.</target>
+      </trans-unit>
       <trans-unit id="tl_projects.teaser.0">
-        <source>News teaser</source>
+        <source>Teaser text</source>
         <target>Teasertext</target>
       </trans-unit>
       <trans-unit id="tl_projects.teaser.1">
@@ -228,6 +236,14 @@
         <source>By clicking the &quot;read more …&quot; button, visitors will be redirected to an external website.</source>
         <target>Beim Anklicken des &quot;Weiterlesen …&quot;-Links wird der Besucher auf eine externe Webseite weitergeleitet.</target>
       </trans-unit>
+      <trans-unit id="tl_projects.linkText.0">
+        <source>Link text</source>
+        <target>Link-Text</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.linkText.1">
+        <source>Here you can override the default &quot;read more…&quot; link text.</source>
+        <target>Hier können Sie den Standard-Text des &quot;Weiterlesen…&quot;-Links überschreiben.</target>
+      </trans-unit>      
       <trans-unit id="tl_projects.jumpTo.0">
         <source>Redirect page</source>
         <target>Weiterleitungsseite</target>

@@ -1,18 +1,23 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
- */
+
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
+// Extend the default palette
+PaletteManipulator::create()
+	->addLegend('projects_legend', 'amg_legend', PaletteManipulator::POSITION_BEFORE)
+	->addField(array('projects', 'projectsp'), 'projects_legend', PaletteManipulator::POSITION_APPEND)
+	->applyToPalette('default', 'tl_user_group')
+;
+
+
+
 
 
 /**
  * Extend default palette
  */
-$GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] = str_replace('fop;', 'fop;{projects_legend},projects,newp,projectsfeeds,projectsfeedp;', $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default']);
+// $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default'] = str_replace('fop;', 'fop;{projects_legend},projects,newp,projectsfeeds,projectsfeedp;', $GLOBALS['TL_DCA']['tl_user_group']['palettes']['default']);
 
 
 /**
@@ -28,9 +33,9 @@ $GLOBALS['TL_DCA']['tl_user_group']['fields']['projects'] = array
 	'sql'                     => "blob NULL"
 );
 
-$GLOBALS['TL_DCA']['tl_user_group']['fields']['newp'] = array
+$GLOBALS['TL_DCA']['tl_user_group']['fields']['projectsp'] = array
 (
-	'label'                   => &$GLOBALS['TL_LANG']['tl_user']['newp'],
+	'label'                   => &$GLOBALS['TL_LANG']['tl_user']['projectsp'],
 	'exclude'                 => true,
 	'inputType'               => 'checkbox',
 	'options'                 => array('create', 'delete'),

@@ -206,22 +206,34 @@ WHERE {$relation['reference_field']} IN (SELECT id FROM tl_projects WHERE pid IN
         return static::findOneBy($columns, $values);
     }
 
+
     /**
      * Find published projects categories.
      *
-     * @return Collection|null
+     * @return Collection<static>|null
      */
-    public static function findPublished()
+    public static function findPublished(array $arrOptions = []): Collection|null
     {
-        $t = static::getTableAlias();
-        $options = ['order' => "$t.sorting"];
+        $t = static::getTable();
+        $arrOptions = array_merge(['order' => "$t.sorting"], $arrOptions);
 
-        if (BE_USER_LOGGED_IN) {
-            return static::findAll($options);
+        if (self::isPreviewMode($arrOptions)) {
+            return static::findAll($arrOptions);
         }
 
-        return static::findBy('published', 1, $options);
+        return static::findBy('published', 1, $arrOptions);
     }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Find published projects categories by parent ID and IDs.
@@ -275,30 +287,40 @@ WHERE {$relation['reference_field']} IN (SELECT id FROM tl_projects WHERE pid IN
         return static::findBy($columns, $values, ['order' => "$t.sorting"]);
     }
 
+
+
     /**
-     * Find the published categories by projects.
+     * Find the published categories by project.
      *
-     * @param int|array $projectsId
-     *
-     * @return Collection|null
+     * @return Collection<static>|array|null
      */
-    public static function findPublishedByProjects($projectsId)
+    public static function findPublishedByProject(array|int $projectId, array $arrOptions = []): Collection|array|null
     {
-        if (0 === \count($ids = DcaRelationsModel::getRelatedValues('tl_projects', 'categories', $projectsId))) {
+        if (0 === \count($ids = DcaRelationsModel::getRelatedValues('tl_projects', 'categories', $projectId))) {
             return null;
         }
 
-        $t = static::getTableAlias();
-        $columns = ["$t.id IN (".\implode(',', \array_map('intval', \array_unique($ids))).')'];
+        $t = static::getTable();
+        $columns = ["$t.id IN (".implode(',', array_map('intval', array_unique($ids))).')'];
         $values = [];
 
-        if (!BE_USER_LOGGED_IN) {
+        if (!self::isPreviewMode($arrOptions)) {
             $columns[] = "$t.published=?";
             $values[] = 1;
         }
 
-        return static::findBy($columns, $values, ['order' => "$t.sorting"]);
+        return static::findBy($columns, $values, array_merge(['order' => "$t.sorting"], $arrOptions));
     }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Count the published projects by archives.

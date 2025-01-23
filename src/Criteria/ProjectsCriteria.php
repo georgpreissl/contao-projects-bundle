@@ -206,6 +206,7 @@ class ProjectsCriteria
             $category = $projectsCategoryModel->getAllSubcategoriesIds($category);
         }
 
+        // hier werden die IDs der Projekte ermittelt welche zur Kategorie ($category) gehören:
         $projectIds = $model->getReferenceValues('tl_projects', 'categories', $category);
         
         $projectIds = $this->parseIds($projectIds);

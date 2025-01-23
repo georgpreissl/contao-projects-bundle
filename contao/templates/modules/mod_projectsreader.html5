@@ -2,7 +2,7 @@
 
 <?php $this->block('content'); ?>
 
-	<?= $this->articles ?>
+	<?= $this->project ?>
 
 	<!-- indexer::stop -->
 	<div class="mod_projectsreader__back">

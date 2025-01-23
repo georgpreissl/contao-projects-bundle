@@ -2,18 +2,15 @@
 
 <?php $this->block('content'); ?>
 	
-  <?php if (empty($this->articles)): ?>
-    <p class="empty"><?= $this->empty ?></p>
-  <?php else: ?>
-    <div class="mod_projectslist__items">
-    <?php //dump($this->articles) ?>
-    <?= implode('', $this->articles) ?>
-    </div>
-
-<div class="ref_teaser_pagination">
-	
-    <?= $this->pagination ?>
-</div>
-  <?php endif; ?>
+	<?php if (empty($this->projects)): ?>
+		<p class="mod_projectslist__empty"><?= $this->empty ?></p>
+	<?php else: ?>
+    	<div class="mod_projectslist__items">
+			<?= implode('', $this->projects) ?>
+		</div>
+		<div class="ref_teaser_pagination">
+			<?= $this->pagination ?>
+		</div>
+	<?php endif; ?>
 
 <?php $this->endblock(); ?>

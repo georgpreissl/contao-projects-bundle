@@ -8,7 +8,6 @@ use Contao\DataContainer;
 use Contao\DC_Table;
 use Contao\Image;
 use Contao\Input;
-use Contao\News;
 use GeorgPreissl\Projects\Security\GeorgPreisslProjectsPermissions;
 use Contao\PageModel;
 use Contao\StringUtil;
@@ -18,9 +17,6 @@ use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBagInterface;
 
 
 
-/**
- * Table tl_projects_archive
- */
 $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 (
 
@@ -31,19 +27,34 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 		'ctable'                      => array('tl_projects'),
 		'switchToEdit'                => true,
 		'enableVersioning'            => true,
-		'markAsCopy'                  => 'title',
+		'markAsCopy'                  => 'title',	
 		'onload_callback' => array
 		(
-			array('tl_projects_archive', 'checkPermission'),
+			array('tl_projects_archive', 'adjustDca'),
+			// array('tl_projects_archive', 'checkPermission'),
 			// array('tl_projects_archive', 'checkCategoryPermission'),
 			// array('georgpreissl_project_categories.listener.data_container.projects_archive', 'onLoadCallback')
 			// array('tl_projects_archive', 'adjustPalette')
 		),
+		'oncreate_callback' => array
+		(
+			array('tl_projects_archive', 'adjustPermissions')
+		),
+		'oncopy_callback' => array
+		(
+			array('tl_projects_archive', 'adjustPermissions')
+		),
+		'oninvalidate_cache_tags_callback' => array
+		(
+			array('tl_projects_archive', 'addSitemapCacheInvalidationTag'),
+		),			
 		'sql' => array
 		(
 			'keys' => array
 			(
-				'id' => 'primary'
+				'id' => 'primary',
+				'tstamp' => 'index',
+				'jumpTo' => 'index'
 			)
 		)
 	),
@@ -56,7 +67,8 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 			'mode'                    => DataContainer::MODE_SORTED,
 			'fields'                  => array('title'),
 			'flag'                    => DataContainer::SORT_INITIAL_LETTER_ASC,
-			'panelLayout'             => 'filter;search,limit'
+			'panelLayout'             => 'filter;search,limit',
+			'defaultSearchField'      => 'title'
 		),
 		'label' => array
 		(
@@ -65,50 +77,12 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 		),
 		'global_operations' => array
 		(
-			'all' => array
-			(
-				'href'                => 'act=select',
-				'class'               => 'header_edit_all',
-				'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-			),
 			'categories' => array
 			(
 				'href'                => 'table=tl_projects_category',
-				'icon'                => 'bundles/georgpreisslprojects/icon.png',
+				'icon'                => 'bundles/georgpreisslprojects/icon.svg',
 				'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="c"'
 			)			
-		),
-		'operations' => array
-		(
-			'edit' => array
-			(
-				'href'                => 'table=tl_projects',
-				'icon'                => 'edit.svg'
-			),
-			'editheader' => array
-			(
-				'href'                => 'act=edit',
-				'icon'                => 'header.svg',
-				'button_callback'     => array('tl_projects_archive', 'editHeader')
-			),
-			'copy' => array
-			(
-				'href'                => 'act=copy',
-				'icon'                => 'copy.svg',
-				'button_callback'     => array('tl_projects_archive', 'copyArchive')
-			),
-			'delete' => array
-			(
-				'href'                => 'act=delete',
-				'icon'                => 'delete.svg',
-				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"',
-				'button_callback'     => array('tl_projects_archive', 'deleteArchive')
-			),
-			'show' => array
-			(
-				'href'                => 'act=show',
-				'icon'                => 'show.svg'
-			)
 		)
 	),
 
@@ -139,7 +113,13 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 		),
 		'title' => array
 		(
-			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'test' => array
+		(
 			'search'                  => true,
 			'inputType'               => 'text',
 			'eval'                    => array('mandatory'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
@@ -147,7 +127,6 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 		),
 		'jumpTo' => array
 		(
-			'exclude'                 => true,
 			'inputType'               => 'pageTree',
 			'foreignKey'              => 'tl_page.title',
 			'eval'                    => array('mandatory'=>true, 'fieldType'=>'radio','tl_class'=>'clr'),
@@ -156,30 +135,28 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 		),
 		'protected' => array
 		(
-			'exclude'                 => true,
 			'filter'                  => true,
 			'inputType'               => 'checkbox',
 			'eval'                    => array('submitOnChange'=>true),
-			'sql'                     => "char(1) NOT NULL default ''"
-		),
+			'sql'                     => array('type' => 'boolean', 'default' => false)
+		),		
 		'groups' => array
 		(
-			'exclude'                 => true,
 			'inputType'               => 'checkbox',
 			'foreignKey'              => 'tl_member_group.name',
 			'eval'                    => array('mandatory'=>true, 'multiple'=>true),
 			'sql'                     => "blob NULL",
 			'relation'                => array('type'=>'hasMany', 'load'=>'lazy')
-		),
-		'sortOrder' => array
-		(
-			'exclude'                 => true,
-			'inputType'               => 'select',
-			'options'                 => array('ascending', 'descending'),
-			'reference'               => &$GLOBALS['TL_LANG']['MSC'],
-			'eval'                    => array('tl_class'=>'w50 clr'),
-			'sql'                     => "varchar(32) NOT NULL default 'ascending'"
-		),
+		),		
+		// 'sortOrder' => array
+		// (
+		// 	'exclude'                 => true,
+		// 	'inputType'               => 'select',
+		// 	'options'                 => array('ascending', 'descending'),
+		// 	'reference'               => &$GLOBALS['TL_LANG']['MSC'],
+		// 	'eval'                    => array('tl_class'=>'w50 clr'),
+		// 	'sql'                     => "varchar(32) NOT NULL default 'ascending'"
+		// ),
 		'limitCategories' => array
 		(
 			'exclude'                 => true,
@@ -187,35 +164,21 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 			'eval'                    => array('submitOnChange'=>true),
 			'sql'                     => ['type' => 'boolean', 'default' => 0]
 		),
+
 		'categories' => array
 		(
 			'exclude'                 => true,
 			'filter'                  => true,
-			'inputType'               => 'projectCategoriesPicker',
+			'inputType'               => 'picker',
 			'foreignKey'              => 'tl_projects_category.title',
-			// 'options_callback'        => ['georgpreissl_project_categories.listener.data_container.projects', 'onCategoriesOptionsCallback'],
 			'eval'                    => array(
 				'mandatory'=>true, 
 				'multiple'=>true, 
-				'fieldType'=>'checkbox', 
-				// 'foreignTable'=>'tl_projects_category', 
-				// 'titleField'=>'title', 
-				// 'searchField'=>'title', 
-				// 'managerHref'=>'do=projects&table=tl_projects_category'
+				'fieldType'=>'checkbox'
 			),
-			'sql'                     => ['type' => 'blob', 'notnull' => false]
+			'sql'                     => ['type' => 'blob', 'notnull' => false],
+			'relation'                => ['type' => 'hasMany', 'load' => 'lazy']
 		)
-		// $GLOBALS['TL_DCA']['tl_news_archive']['fields']['categories'] = [
-		// 	'label' => &$GLOBALS['TL_LANG']['tl_news_archive']['categories'],
-		// 	'exclude' => true,
-		// 	'filter' => true,
-		// 	'inputType' => 'newsCategoriesPicker',
-		// 	'foreignKey' => 'tl_news_category.title',
-		// 	'options_callback' => ['codefog_news_categories.listener.data_container.news', 'onCategoriesOptionsCallback'],
-		// 	'eval' => ['mandatory' => true, 'multiple' => true, 'fieldType' => 'checkbox'],
-		// 	'sql' => ['type' => 'blob', 'notnull' => false],
-		// ];
-				
 	)
 );
 
@@ -229,7 +192,30 @@ $GLOBALS['TL_DCA']['tl_projects_archive'] = array
 class tl_projects_archive extends Backend
 {
 
+	/**
+	 * Set the root IDs.
+	 */
+	public function adjustDca()
+	{
+		$user = BackendUser::getInstance();
+		
+		if ($user->isAdmin)
+		{
+			return;
+		}
+		
+		// Set root IDs
+		if (empty($user->projects) || !is_array($user->projects))
+		{
+			$root = array(0);
+		}
+		else
+		{
+			$root = $user->projects;
+		}
 
+		$GLOBALS['TL_DCA']['tl_projects_archive']['list']['sorting']['root'] = $root;
+	}
 
 
 	/**
@@ -338,19 +324,21 @@ class tl_projects_archive extends Backend
 			$insertId = func_get_arg(1);
 		}
 
-		if ($this->User->isAdmin)
+		$user = BackendUser::getInstance();
+
+		if ($user->isAdmin)
 		{
 			return;
 		}
 
 		// Set root IDs
-		if (empty($this->User->projects) || !is_array($this->User->projects))
+		if (empty($user->projects) || !is_array($user->projects))
 		{
 			$root = array(0);
 		}
 		else
 		{
-			$root = $this->User->projects;
+			$root = $user->projects;
 		}
 
 		// The archive is enabled already
@@ -359,55 +347,54 @@ class tl_projects_archive extends Backend
 			return;
 		}
 
-		/** @var AttributeBagInterface $objSessionBag */
-		$objSessionBag = System::getContainer()->get('session')->getBag('contao_backend');
+		$db = Database::getInstance();
 
+		$objSessionBag = System::getContainer()->get('request_stack')->getSession()->getBag('contao_backend');
 		$arrNew = $objSessionBag->get('new_records');
 
 		if (is_array($arrNew['tl_projects_archive']) && in_array($insertId, $arrNew['tl_projects_archive']))
 		{
 			// Add the permissions on group level
-			if ($this->User->inherit != 'custom')
+			if ($user->inherit != 'custom')
 			{
-				$objGroup = $this->Database->execute("SELECT id, projects, projectsp FROM tl_user_group WHERE id IN(" . implode(',', array_map('\intval', $this->User->groups)) . ")");
+				$objGroup = $db->execute("SELECT id, projects, projectsp FROM tl_user_group WHERE id IN(" . implode(',', array_map('\intval', $user->groups)) . ")");
 
 				while ($objGroup->next())
 				{
-					$arrProjetcsp = StringUtil::deserialize($objGroup->projectsp);
+					$arrProjectsp = StringUtil::deserialize($objGroup->projectsp);
 
-					if (is_array($arrProjetcsp) && in_array('create', $arrProjetcsp))
+					if (is_array($arrProjectsp) && in_array('create', $arrProjectsp))
 					{
 						$arrProjects = StringUtil::deserialize($objGroup->projects, true);
 						$arrProjects[] = $insertId;
 
-						$this->Database->prepare("UPDATE tl_user_group SET projects=? WHERE id=?")
-									   ->execute(serialize($arrProjects), $objGroup->id);
+						$db->prepare("UPDATE tl_user_group SET projects=? WHERE id=?")->execute(serialize($arrProjects), $objGroup->id);
 					}
 				}
 			}
 
 			// Add the permissions on user level
-			if ($this->User->inherit != 'group')
+			if ($user->inherit != 'group')
 			{
-				$objUser = $this->Database->prepare("SELECT projects, projectsp FROM tl_user WHERE id=?")
-										   ->limit(1)
-										   ->execute($this->User->id);
+				$objUser = $db
+					->prepare("SELECT projects, projectsp FROM tl_user WHERE id=?")
+					->limit(1)
+					->execute($user->id);
 
-				$arrProjetcsp = StringUtil::deserialize($objUser->projectsp);
+				$arrProjectsp = StringUtil::deserialize($objUser->projectsp);
 
-				if (is_array($arrProjetcsp) && in_array('create', $arrProjetcsp))
+				if (is_array($arrProjectsp) && in_array('create', $arrProjectsp))
 				{
 					$arrProjects = StringUtil::deserialize($objUser->projects, true);
 					$arrProjects[] = $insertId;
 
-					$this->Database->prepare("UPDATE tl_user SET projects=? WHERE id=?")
-								   ->execute(serialize($arrProjects), $this->User->id);
+					$db->prepare("UPDATE tl_user SET projects=? WHERE id=?")->execute(serialize($arrProjects), $user->id);
 				}
 			}
 
 			// Add the new element to the user object
 			$root[] = $insertId;
-			$this->User->projects = $root;
+			$user->projects = $root;
 		}
 	}
 
@@ -500,6 +487,21 @@ class tl_projects_archive extends Backend
         $GLOBALS['TL_DCA']['tl_projects_archive']['palettes']['default'] = str_replace('limitCategories;', 'limitCategories,categories;', $GLOBALS['TL_DCA']['tl_projects_archive']['palettes']['default']);
     }
 
+	/**
+	 * @param DataContainer $dc
+	 *
+	 * @return array
+	 */
+	public function addSitemapCacheInvalidationTag($dc, array $tags)
+	{
+		$pageModel = PageModel::findWithDetails($dc->activeRecord->jumpTo);
 
+		if ($pageModel === null)
+		{
+			return $tags;
+		}
+
+		return array_merge($tags, array('contao.sitemap.' . $pageModel->rootId));
+	}
 
 }

@@ -28,13 +28,14 @@
 
 	<?php if ($this->hasText || $this->description) : ?>
 		<?php 
-		// dump($this->link);
+		// dump($this->target);
 		$this->insert('link', [
 			'type' => 'text', 
 			'url' => $this->link, 
-			'label' => 'Mehr erfahren',
+			'label' => $this->linkText ? : 'Mehr erfahren',
 			'customClass' => 'project_latest__more',
-			'icon' => 'arrow-right'
+			'icon' => 'arrow-right',
+			'target' => $this->target ? '_blank' : '_self'
 		]);
 		?>
 	<?php endif; ?>

@@ -79,8 +79,16 @@
       </trans-unit>
       <trans-unit id="tl_module.projects_showQuantity.1">
         <source>Show the number of project items of each month.</source>
-        <target>Die Anzahl der Projekte jedes Monats anzeigen.</target>
+        <target>Die Gesamtanzahl der Projekte im Filtermenü anzeigen.</target>
       </trans-unit>
+      <trans-unit id="tl_module.projects_keepCanonical.0">
+        <source>Use the current URL for canonical links</source>
+        <target>Die aktuelle URL für kanonische Links verwenden</target>
+      </trans-unit>
+      <trans-unit id="tl_module.projects_keepCanonical.1">
+        <source>Keep the current URL instead of the configured reader page for canonical links.</source>
+        <target>Die aktuelle URL anstelle der konfigurierten Leseseite für kanonische Links verwenden.</target>
+      </trans-unit>      
       <trans-unit id="tl_module.projects_day">
         <source>Day</source>
         <target>Tag</target>

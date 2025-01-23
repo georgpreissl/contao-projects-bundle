@@ -4,6 +4,8 @@ use Contao\Config;
 use Contao\DataContainer;
 use Contao\DC_Table;
 use Contao\System;
+use Contao\Backend;
+use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use Terminal42\DcMultilingualBundle\Driver;
 
 System::loadLanguageFile('tl_projects_archive');
@@ -39,7 +41,7 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = [
         'sorting' => [
             'mode' => DataContainer::MODE_TREE,
             'rootPaste' => true,
-            'icon' => 'bundles/georgpreisslprojectscategories/icon.png',
+            'icon' => 'bundles/georgpreisslprojects/icon.svg',
             'panelLayout' => 'filter;search',
         ],
         'label' => [
@@ -132,7 +134,6 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = [
             'sql' => ['type' => 'string', 'default' => ''],
         ],
         'frontendTitle' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_projects_category']['frontendTitle'],
             'exclude' => true,
             'search' => true,
             'inputType' => 'text',
@@ -140,7 +141,7 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = [
             'sql' => ['type' => 'string', 'length' => 64, 'default' => ''],
         ],
         'alias' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_projects_category']['alias'],
+            'label' => &$GLOBALS['TL_LANG']['tl_news_category']['alias'],
             'search' => true,
             'inputType' => 'text',
             'eval' => [
@@ -151,7 +152,7 @@ $GLOBALS['TL_DCA']['tl_projects_category'] = [
                 'tl_class' => 'w50',
             ],
             'sql' => ['type' => 'binary', 'length' => 128, 'default' => ''],
-        ],        
+        ],     
         'cssClass' => [
             'label' => &$GLOBALS['TL_LANG']['tl_projects_category']['cssClass'],
             'exclude' => true,
@@ -243,4 +244,48 @@ if (\GeorgPreissl\Projects\MultilingualHelper::isActive()) {
 
     $GLOBALS['TL_DCA']['tl_projects_category']['fields']['alias']['eval']['translatableFor'] = '*';
     unset($GLOBALS['TL_DCA']['tl_projects_category']['fields']['alias']['eval']['spaceToUnderscore'], $GLOBALS['TL_DCA']['tl_projects_category']['fields']['alias']['eval']['unique']);
+}
+
+
+class tl_projects_category extends Backend
+{
+	/**
+	 * Auto-generate the news alias if it has not been set yet
+	 *
+	 * @param mixed         $varValue
+	 * @param DataContainer $dc
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
+	public function generateAlias($varValue, DataContainer $dc)
+	{
+        
+        // return;
+		$aliasExists = static function (string $alias) use ($dc): bool {
+			$result = Database::getInstance()
+				->prepare("SELECT id FROM tl_projects_category WHERE alias=? AND id!=?")
+				->execute($alias, $dc->id);
+
+			return $result->numRows > 0;
+		};
+        dump($varValue);
+		// Generate alias if there is none
+		if (!$varValue)
+		{
+			$varValue = System::getContainer()->get('contao.slug')->generate($dc->activeRecord->title, ProjectsCategoryModel::findById($dc->activeRecord->pid)->jumpTo, $aliasExists);
+		}
+		elseif (preg_match('/^[1-9]\d*$/', $varValue))
+		{
+			throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasNumeric'], $varValue));
+		}
+		elseif ($aliasExists($varValue))
+		{
+			throw new Exception(sprintf($GLOBALS['TL_LANG']['ERR']['aliasExists'], $varValue));
+		}
+
+		return $varValue;
+	}
+
 }

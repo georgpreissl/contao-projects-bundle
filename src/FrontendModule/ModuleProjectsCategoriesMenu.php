@@ -103,8 +103,8 @@ class ModuleProjectsCategoriesMenu extends ModuleProjectsCategories
         if ($this->projects_resetCategories && 1 === $level) {
             $items[] = $this->generateItem(
                 $this->getTargetPage()->getFrontendUrl(),
-                ($GLOBALS['TL_LANG']['MSC']['resetCategories'][0] ?? null),
-                ($GLOBALS['TL_LANG']['MSC']['resetCategories'][1] ?? null),
+                ($GLOBALS['TL_LANG']['MSC']['projects_resetCategories'][0] ?? null),
+                ($GLOBALS['TL_LANG']['MSC']['projects_resetCategories'][1] ?? null),
                 'reset',
                 0 === \count($this->currentProjectsCategories) && null === $this->activeCategory
             );

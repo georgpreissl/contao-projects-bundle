@@ -37,6 +37,14 @@
         <source>Title and alias</source>
         <target>Titel und Alias</target>
       </trans-unit>
+      <trans-unit id="tl_projects_category.details_legend">
+        <source>Category details</source>
+        <target>Kategorie Details</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.modules_legend">
+        <source>Module settings</source>
+        <target>Modul-Einstellungen</target>
+      </trans-unit>
       <trans-unit id="tl_projects_category.publish_legend">
         <source>Publish</source>
         <target>Veröffentlichung</target>
@@ -72,6 +80,46 @@
       <trans-unit id="tl_projects_category.categories.1">
         <source>New category</source>
         <target>Projekt-Kategorien erstellen und löschen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.description.0">
+        <source>Description</source>
+        <target>Beschreibung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.description.1">
+        <source>Here you can enter a description of the category.</source>
+        <target>Hier können Sie eine Beschreibung der Kategorie eingeben.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.image.0">
+        <source>Image</source>
+        <target>Bild</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.image.1">
+        <source>Here you can select the image for the category.</source>
+        <target>Hier können Sie das Bild für die Kategorie auswählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.hideInList.0">
+        <source>Hide in List/Archive module</source>
+        <target>Im Listen/Archiv-Modul verstecken</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.hideInList.1">
+        <source>Does not display this category in the project list or archive module (only affects the <em>project_</em> templates)</source>
+        <target>Zeigt diese Kategorie nicht im Projektliste oder -archiv Modul an (wirkt sich nur auf die <em>project_</em> Templates aus).</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.hideInReader.0">
+        <source>Hide in the reader module</source>
+        <target>Im Leser-Modul verstecken</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.hideInReader.1">
+        <source>Does not display this category in the Project Reader module (only affects the <em>project_</em> templates).</source>
+        <target>Zeigt diese Kategorie nicht im Projektleser-Modul an (wirkt sich nur auf die <em>project_</em> Templates aus).</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.excludeInRelated.0">
+        <source>Exclude from similar project list</source>
+        <target>Aus ähnlicher Projektliste ausschließen</target>
+      </trans-unit>
+      <trans-unit id="tl_projects_category.excludeInRelated.1">
+        <source>Excludes the projects of this category in the project list of similar projects.</source>
+        <target>Schließt die Projekte dieser Kategorie in der Projektliste der ähnlichen Projekte aus.</target>
       </trans-unit>
     </body>
   </file>

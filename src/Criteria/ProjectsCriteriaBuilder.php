@@ -32,8 +32,13 @@ class ProjectsCriteriaBuilder
     ) {
     }
 
+    public function create(array $archives): ProjectsCriteria
+    {
+        $criteria = new ProjectsCriteria($this->framework, $this->tokenChecker);
+        $criteria->setBasicCriteria($archives);
 
-
+        return $criteria;
+    }
 
 
 
@@ -79,10 +84,39 @@ class ProjectsCriteriaBuilder
     {
         $criteria = new ProjectsCriteria($this->framework, $this->tokenChecker);
         
+        /*
+        $criteria sieht jetzt so aus:
+        GeorgPreissl\Projects\Criteria\ProjectsCriteria {#2602 ▼
+        -columns: []
+        -values: []
+        -options: []
+        ...
+        }
+        */
+
 
         try {
             $criteria->setBasicCriteria($archives, $module->projects_order, $module->projects_featured);
-
+            
+            /*
+            $criteria sieht jetzt so aus:
+            GeorgPreissl\Projects\Criteria\ProjectsCriteria {#2602 ▼
+                -columns: array:2 [▼
+                    0 => "tl_projects.pid IN(1)"
+                    1 => "tl_projects.published=? AND (tl_projects.start=? OR tl_projects.start<=?) AND (tl_projects.stop=? OR tl_projects.stop>?)"
+                ]
+                -values: array:5 [▼
+                    0 => 1
+                    1 => ""
+                    2 => 1737636420
+                    3 => ""
+                    4 => 1737636420
+                ]
+                -options: array:1 [▼
+                    "order" => "tl_projects.sorting"
+                ]
+            }
+            */
             // Set the featured filter
             if (null !== $featured) {
                 $criteria->setFeatured($featured);
@@ -92,13 +126,35 @@ class ProjectsCriteriaBuilder
             if ($module->projects_relatedCategories) {
                 $this->setRelatedListCriteria($criteria, $module);
             } else {
+                // Wenn es sich um ein 'normales' Filtermenü handelt:
                 // Set the regular list criteria
                 $this->setRegularListCriteria($criteria, $module);
             }
+            /*
+            $criteria sieht jetzt, nach dem setRegularListCriteria() bzw. das darin enthaltene setCategory() angewendet wurde, so aus:
+            GeorgPreissl\Projects\Criteria\ProjectsCriteria {#2521 ▼
+            -columns: array:3 [▼
+                0 => "tl_projects.pid IN(1)"
+                1 => "tl_projects.published=? AND (tl_projects.start=? OR tl_projects.start<=?) AND (tl_projects.stop=? OR tl_projects.stop>?)"
+                2 => "tl_projects.id IN(8,14)"
+            ]
+            -values: array:5 [▼
+                0 => 1
+                1 => ""
+                2 => 1737636660
+                3 => ""
+                4 => 1737636660
+            ]
+            -options: array:1 [▼
+                "order" => "tl_projects.sorting"
+            ]
+            }            
+            */
+            
         } catch (NoProjectException $e) {
             return null;
         }
-
+        
         return $criteria;
     }
 
@@ -189,9 +245,11 @@ class ProjectsCriteriaBuilder
         if ($module->projects_filterCategories) {
             /** @var Input $input */
             $input = $this->framework->getAdapter(Input::class);
+            
             $param = $this->manager->getParameterName();
 
             if ($alias = $input->get($param)) {
+                // $alias ist zb. 'tuerme' wenn die Kategorie 'Türme' ausgewählt wurde
                 
                 /** @var ProjectsCategoryModel $model */
                 $model = $this->framework->getAdapter(ProjectsCategoryModel::class);
@@ -201,7 +259,9 @@ class ProjectsCriteriaBuilder
                     throw new CategoryNotFoundException(sprintf('Project category "%s" was not found', $alias));
                 }
                 
+                // hier wird nun bspw. "tl_projects.id IN(8,14)" zu '$criteria->columns' hinzugefügt:
                 $criteria->setCategory($category->id, (bool) $module->projects_filterPreserve, (bool) $module->projects_includeSubcategories);
+                
             }
         }
     }

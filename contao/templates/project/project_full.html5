@@ -1,35 +1,30 @@
 
-<div class="project_full<?= $this->class ?>" itemscope itemtype="http://schema.org/RealEstateListing" >
+<div class="project_full<?= $this->class ?>" itemscope itemtype="http://schema.org/Project" >
 
 	<div class="project_full__header">
 
-		<div class="project_full__image">
-			<?php if ($this->addImage): ?>
-				<?php unset($this->arrData['href']); ?>
+		<?php if ($this->addImage): ?>
+			<div class="project_full__image">
 				<?php $this->insert('image', $this->arrData); ?>
-			<?php endif; ?>
-		</div>
+			</div>
+		<?php endif; ?>
 
 		<div class="project_full__title">
 			<h1 class="project_full__hl" itemprop="name" ><?= $this->projectHeadline ?></h1>
 
-			<?php //dump($this->categories); ?>
-			<?php if ($this->projectCategories): ?>
+			<?php //dump($this->categories) ?>
+			<?php if ($this->categories): ?>
 				<div class="project_full__categories">
 					<span class="project_full__categories-label">Kategorie:</span>
 					<ul >
-						<?php foreach ($this->projectCategories as $category): ?>
-							<li class="<?= $category['class'] ?>">
-								<?php if ($category['image']): ?>
-									<figure class="image_container">
-										<?php $this->insert('picture_default', $category['image']->picture) ?>
-									</figure>
-								<?php endif; ?>
+						<?php foreach ($this->categories as $category): ?>
+							<li class="<?= $category['cssClass'] ?>">
 
-								<?php if ($category['href']): ?>
-									<a href="<?= $category['href'] ?>" title="<?= $category['linkTitle'] ?>" class="md" ><?= $category['name'] ?></a>
+								<?php //dump($this->arrData); ?>
+								<?php if (isset($category['url'])): ?>
+									<a href="<?= $category['url'] ?>" title="<?= $category['title'] ?>" class="md" ><?= $category['title'] ?></a>
 								<?php else: ?>
-									<span><?= $category['name'] ?></span>
+									<span><?= $category['title'] ?></span>
 								<?php endif; ?>
 							</li>
 						<?php endforeach; ?>
@@ -108,7 +103,7 @@
 							'type' => 'text', 
 							'icon' => 'arrow-right', 
 							'url' => $enclosure['href'],
-							'label' => $enclosure['link'] . ' | ' . $enclosure['extension'],
+							'label' => $enclosure['link'] . ' | ' . $enclosure['extension'] .' | ' . $enclosure['filesize'],
 							'customClass' => 'project_full__enclosures-link',
 							'title' => $enclosure['title']
 						]); 
@@ -117,6 +112,8 @@
 				</div>
 			</div>
 		<?php endif; ?>
+
+	
 
 	</div>
 	<div class="project_full__cta cols-md-2 cols-lg-3">
@@ -129,3 +126,23 @@
 		</div>
 	</div>
 </div>
+
+
+<?php
+
+$schemaOrg = $this->getSchemaOrgData();
+
+if ($this->hasText) {
+    $schemaOrg['text'] = $this->rawHtmlToPlainText($this->text);
+}
+
+$this->addSchemaOrg($schemaOrg);
+
+if ($this->figure) {
+    $primaryImage = [
+        '@type' => 'WebPage',
+        'primaryImageOfPage' => $this->figure->getSchemaOrgData(),
+    ];
+
+    $this->addSchemaOrg($primaryImage);
+}

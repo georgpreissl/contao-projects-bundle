@@ -11,6 +11,7 @@ use Contao\Input;
 use Contao\LayoutModel;
 use Contao\PageModel;
 use Contao\System;
+use Contao\Database;
 use GeorgPreissl\Projects\Projects;
 use GeorgPreissl\Projects\Model\ProjectsModel;
 use GeorgPreissl\Projects\Model\ProjectsArchiveModel;
@@ -28,6 +29,16 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		'switchToEdit'                => true,
 		'enableVersioning'            => true,
 		'markAsCopy'                  => 'headline',
+		'onsubmit_callback' => array
+		(
+			array('tl_projects', 'adjustTime'),
+			// array('georgpreissl_project_categories.listener.data_container.projects', 'onSubmitCallback'),
+			// array('tl_projects', 'updateCategories')
+		),
+		'oninvalidate_cache_tags_callback' => array
+		(
+			array('tl_projects', 'addSitemapCacheInvalidationTag'),
+		),		
 		'onload_callback' => array
 		(
 			// array('georgpreissl_project_categories.listener.data_container.projects', 'onLoadCallback'),
@@ -38,21 +49,12 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		(
 			array('tl_projects', 'deleteCategories')
 		),
-		'onsubmit_callback' => array
-		(
-			array('tl_projects', 'adjustTime'),
-			// array('georgpreissl_project_categories.listener.data_container.projects', 'onSubmitCallback'),
-			// array('tl_projects', 'updateCategories')
-		),
-		// 'oninvalidate_cache_tags_callback' => array
-		// (
-		// 	array('tl_projects', 'addSitemapCacheInvalidationTag'),
-		// ),			
 		'sql' => array
 		(
 			'keys' => array
 			(
 				'id' => 'primary',
+				'tstamp' => 'index',
 				'alias' => 'index',
 				'pid,published,featured,start,stop' => 'index'
 			)
@@ -67,51 +69,21 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'mode'                    => 4,
 			'fields'                  => array('sorting'),
 			'headerFields'            => array('title', 'jumpTo', 'tstamp', 'protected'),
-			'panelLayout'             => 'filter;sort,search,limit'		
+			'panelLayout'             => 'filter;sort,search,limit'
 		),
 		'label' => array
 		(
 			'fields'                  => array('headline', 'location'),
-			'format'                  => '%s <span style="color:#b3b3b3;padding-left:3px;">[%s]</span>',
+			'format'                  => '%s <span class="label-info">[%s]</span>',
 			'maxCharacters'           => 40
-		),
-		'global_operations' => array
-		(
-			'all' => array
-			(
-				'href'                => 'act=select',
-				'class'               => 'header_edit_all',
-				'attributes'          => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-			)		
 		),
 		'operations' => array
 		(
-			'edit' => array
-			(
-				'href'                => 'table=tl_content',
-				'icon'                => 'edit.svg'
-			),
-			'editheader' => array
-			(
-				'href'                => 'act=edit',
-				'icon'                => 'header.svg'
-			),
-			'copy' => array
-			(
-				'href'                => 'act=paste&amp;mode=copy',
-				'icon'                => 'copy.svg'
-			),
-			'cut' => array
-			(
-				'href'                => 'act=paste&amp;mode=cut',
-				'icon'                => 'cut.svg'
-			),
-			'delete' => array
-			(
-				'href'                => 'act=delete',
-				'icon'                => 'delete.svg',
-				'attributes'          => 'onclick="if(!confirm(\'' . ($GLOBALS['TL_LANG']['MSC']['deleteConfirm'] ?? null) . '\'))return false;Backend.getScrollOffset()"'
-			),
+			'edit',
+			'children',
+			'copy',
+			'cut',
+			'delete',
 			'toggle' => array
 			(
 				'href'                => 'act=toggle&amp;field=published',
@@ -123,11 +95,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 				'href'                => 'act=toggle&amp;field=featured',
 				'icon'                => 'featured.svg',
 			),
-			'show' => array
-			(
-				'href'                => 'act=show',
-				'icon'                => 'show.svg'
-			)
+			'show'
 		)
 	),
 
@@ -136,24 +104,43 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 	(
 		'__selector__'                => array('source', 'addImage', 'addEnclosure', 'overwriteMeta'),
 		'default'                     => ''
-		. '{title_legend},headline,featured,alias;'
-		. '{date_legend},date,time;'
-		. '{source_legend:hide},source;'
-		. '{meta_legend},pageTitle,robots,metaDescription;'
-		. '{category_legend},categories;'
-		. '{teaser_legend},subheadline,teaser;'
-		. '{image_legend},addImage;'
-		. '{data_legend},shortDescription,description,customer,location,date;'
-		. '{gallery_legend},multiSRC,sortBy;'
-		. '{enclosure_legend:hide},addEnclosure;'
-		. '{related_legend:hide},relatedProjects;'
-		. '{expert_legend:hide},cssClass;'
-		. '{publish_legend},published,start,stop'
+									. '{title_legend},headline,featured,alias;'
+									. '{date_legend},date,time;'
+									. '{source_legend:hide},source,linkText,canonicalLink;'
+									. '{meta_legend},pageTitle,robots,metaDescription,serpPreview;'
+									. '{category_legend},categories;'
+									. '{teaser_legend},subheadline,teaser;'
+									. '{image_legend},addImage;'
+									. '{data_legend},shortDescription,description,customer,location,date;'
+									. '{gallery_legend},multiSRC,sortBy;'
+									. '{enclosure_legend:hide},addEnclosure;'
+									. '{related_legend:hide},relatedProjects;'
+									. '{expert_legend:hide},cssClass;'
+									. '{publish_legend},published,start,stop',
+		'internal'                    => ''
+									. '{title_legend},headline,featured,alias;'
+									. '{date_legend},date,time;'
+									. '{source_legend},source,jumpTo,linkText;'
+									. '{teaser_legend},subheadline,teaser;'
+									. '{image_legend},addImage;'
+									. '{enclosure_legend:hide},addEnclosure;'
+									. '{expert_legend:hide},cssClass;'
+									. '{publish_legend},published,start,stop',
+		'external'                    => ''
+									. '{title_legend},headline,featured,alias;'
+									. '{date_legend},date,time;'
+									. '{source_legend},source,url,target,linkText;'
+									. '{teaser_legend},subheadline,teaser;'
+									. '{image_legend},addImage;'
+									. '{enclosure_legend:hide},addEnclosure;'
+									. '{expert_legend:hide},cssClass;'
+									. '{publish_legend},published,start,stop'
+
 	),
 	// Subpalettes
 	'subpalettes' => array
 	(
-		'addImage'                    => 'singleSRC,size,floating,imagemargin,fullsize,overwriteMeta',
+		'addImage'                    => 'singleSRC,overwriteMeta',
 		'addEnclosure'                => 'enclosure',
 		'overwriteMeta'               => 'alt,imageTitle,imageUrl,caption'
 	),
@@ -182,12 +169,11 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'headline' => array
 		(
-			'exclude'                 => true,
 			'search'                  => true,
 			'sorting'                 => true,
 			'flag'                    => DataContainer::SORT_INITIAL_LETTER_ASC,
 			'inputType'               => 'text',
-			'eval'                    => array('mandatory'=>true, 'maxlength'=>255),
+			'eval'                    => array('mandatory'=>true, 'basicEntities'=>true, 'maxlength'=>255),
 			'sql'                     => "varchar(255) NOT NULL default ''"
 		),
 		'categories' => array
@@ -207,33 +193,17 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 				'fieldColumn' => 'category_id',
 				'relationTable' => 'tl_projects_categories',
 			]			
-			// 'exclude' => true,
-			// 'filter' => true,
-			// 'inputType' => 'projectCategoriesPicker',
-			// 'foreignKey' => 'tl_projects_category.title',
-			// // 'options_callback' => ['georgpreissl_project_categories.listener.data_container.projects', 'onCategoriesOptionsCallback'],
-			// 'eval' => ['multiple' => true, 'fieldType' => 'checkbox'],
-			// 'relation' => [
-			// 	'type' => 'haste-ManyToMany',
-			// 	'load' => 'lazy',
-			// 	'table' => 'tl_projects_category',
-			// 	'referenceColumn' => 'project_id',
-			// 	'fieldColumn' => 'category_id',
-			// 	'relationTable' => 'tl_projects_categories',
-			// ],
 		),
 		'featured' => array
 		(
-			'exclude'                 => true,
 			'toggle'                  => true,
 			'filter'                  => true,
 			'inputType'               => 'checkbox',
-			'eval'                    => array('tl_class'=>'w50 m12'),
-			'sql'                     => "char(1) NOT NULL default ''"
+			'eval'                    => array('tl_class'=>'w50'),
+			'sql'                     => array('type' => 'boolean', 'default' => false)
 		),		
 		'alias' => array
 		(
-			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'alias', 'doNotCopy'=>true, 'unique'=>true, 'maxlength'=>255, 'tl_class'=>'w50'),
@@ -242,14 +212,13 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 				array('tl_projects', 'generateAlias')
 			),
 			'sql'                     => "varchar(255) BINARY NOT NULL default ''"
-		),
+		),		
 		'date' => array
 		(
 			'default'                 => time(),
-			'exclude'                 => true,
 			'filter'                  => true,
 			'sorting'                 => true,
-			'flag'                    => DataContainer::SORT_MONTH_DESC,
+			'flag'                    => DataContainer::SORT_MONTH_BOTH,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'date', 'doNotCopy'=>true, 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
 			'load_callback' => array
@@ -257,19 +226,21 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 				array('tl_projects', 'loadDate')
 			),
 			'sql'                     => "int(10) unsigned NOT NULL default 0"
-		),
+		),	
 		'time' => array
 		(
 			'default'                 => time(),
-			'exclude'                 => true,
 			'flag'                    => DataContainer::SORT_MONTH_DESC,
 			'inputType'               => 'text',
 			'eval'                    => array('rgxp'=>'time', 'doNotCopy'=>true, 'tl_class'=>'w50'),
+			'load_callback' => array
+			(
+				array('tl_projects', 'loadTime')
+			),			
 			'sql'                     => "int(10) unsigned NOT NULL default 0"
-		),
+		),		
 		'pageTitle' => array
 		(
-			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'w50'),
@@ -277,16 +248,14 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'robots' => array
 		(
-			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'select',
 			'options'                 => array('index,follow', 'index,nofollow', 'noindex,follow', 'noindex,nofollow'),
 			'eval'                    => array('tl_class'=>'w50', 'includeBlankOption' => true),
 			'sql'                     => "varchar(32) NOT NULL default ''"
-		),
+		),	
 		'metaDescription' => array
 		(
-			'exclude'                 => true,
 			'search'                  => true,
 			'inputType'               => 'textarea',
 			'eval'                    => array('style'=>'height:60px', 'decodeEntities'=>true, 'tl_class'=>'clr'),
@@ -301,9 +270,9 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 				// 'url_callback'=>array(
 				// 	'tl_projects', 'getSerpUrl'
 				// ), 
-				'title_tag_callback'=>array('tl_projects', 'getTitleTag'), 
-				'titleFields'=>array('pageTitle', 'headline'), 
-				'descriptionFields'=>array('metaDescription', 'teaser')
+				'title_tag_callback'  => array('tl_projects', 'getTitleTag'), 
+				'titleFields'         => array('pageTitle', 'headline'), 
+				'descriptionFields'   => array('metaDescription', 'teaser')
 			),
 			'sql'                     => null
 		),		
@@ -323,6 +292,13 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'eval'                    => array('rte'=>'tinyMCE', 'tl_class'=>'clr'),
 			'sql'                     => "text NULL"
 		),
+		'canonicalLink' => array
+		(
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'url', 'decodeEntities'=>true, 'maxlength'=>2048, 'dcaPicker'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(2048) NOT NULL default ''"
+		),		
 		'subheadline' => array
 		(
 			'exclude'                 => true,
@@ -393,15 +369,6 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			},
 			'sql'                     => "varchar(64) NOT NULL default ''"
 		),
-		'imagemargin' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['imagemargin'],
-			'exclude'                 => true,
-			'inputType'               => 'trbl',
-			'options'                 => array('px', '%', 'em', 'rem'),
-			'eval'                    => array('includeBlankOption'=>true, 'tl_class'=>'w50'),
-			'sql'                     => "varchar(128) NOT NULL default ''"
-		),
 		'imageUrl' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['imageUrl'],
@@ -427,16 +394,6 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255, 'allowHtml'=>true, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
-		'floating' => array
-		(
-			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['floating'],
-			'exclude'                 => true,
-			'inputType'               => 'radioTable',
-			'options'                 => array('above', 'left', 'right', 'below'),
-			'eval'                    => array('cols'=>4, 'tl_class'=>'w50'),
-			'reference'               => &$GLOBALS['TL_LANG']['MSC'],
-			'sql'                     => "varchar(12) NOT NULL default 'above'"
 		),
 		// 'multiSRC' => array
 		// (
@@ -536,6 +493,13 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'eval'                    => array('submitOnChange'=>true, 'helpwizard'=>true),
 			'sql'                     => "varchar(12) NOT NULL default 'default'"
 		),
+		'linkText' => array
+		(
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('maxlength'=>255, 'decodeEntities'=>true, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
+		),		
 		'jumpTo' => array
 		(
 			'exclude'                 => true,
@@ -937,7 +901,7 @@ class tl_projects extends Backend
 
 		if (BackendUser::getInstance()->isAdmin)
 		{
-			return array('default', 'internal', 'article', 'external');
+			return array('default', 'internal', 'external');
 		}
 
 		$security = System::getContainer()->get('security.helper');
@@ -949,14 +913,6 @@ class tl_projects extends Backend
 			&& $security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'page')
 		) {
 			$arrOptions[] = 'internal';
-		}
-
-		// Add the "article" option
-		if (
-			$security->isGranted(ContaoCorePermissions::USER_CAN_EDIT_FIELD_OF_TABLE, 'tl_projects::articleId')
-			&& $security->isGranted(ContaoCorePermissions::USER_CAN_ACCESS_MODULE, 'article')
-		) {
-			$arrOptions[] = 'article';
 		}
 
 		// Add the "external" option
@@ -992,7 +948,8 @@ class tl_projects extends Backend
 		$arrSet['date'] = strtotime(date('Y-m-d', $dc->activeRecord->date) . ' ' . date('H:i:s', $dc->activeRecord->time));
 		$arrSet['time'] = $arrSet['date'];
 
-		$this->Database->prepare("UPDATE tl_projects %s WHERE id=?")->set($arrSet)->execute($dc->id);
+		// $this->Database->prepare("UPDATE tl_projects %s WHERE id=?")->set($arrSet)->execute($dc->id);
+		Database::getInstance()->prepare("UPDATE tl_projects %s WHERE id=?")->set($arrSet)->execute($dc->id);
 	}
 
 	/**
@@ -1093,9 +1050,9 @@ class tl_projects extends Backend
 	 *
 	 * @return array
 	 */
-	public function addSitemapCacheInvalidationTag($dc, array $taModels)
+	public function addSitemapCacheInvalidationTag($dc, array $tags)
 	{
-		$archiveModel = ProjectsArchiveModel::findByPk($dc->activeRecord->pid);
+		$archiveModel = ProjectsArchiveModel::findById($dc->activeRecord->pid);
 
 		if ($archiveModel === null)
 		{
@@ -1148,9 +1105,6 @@ class tl_projects extends Backend
 
 		return $varValue;
 	}
-
-
-
 
 
 

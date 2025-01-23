@@ -9,8 +9,10 @@ use Contao\Input;
 use Contao\Config;
 use Contao\StringUtil;
 use Contao\BackendTemplate;
+use Contao\PageModel;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use GeorgPreissl\Projects\Model\ProjectsModel;
 
 /**
@@ -35,6 +37,7 @@ class ModuleProjectsReader extends ModuleProjects
 	 */
 	public function generate()
 	{
+		
 		if (System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest(System::getContainer()->get('request_stack')->getCurrentRequest() ?? Request::create('')))
 		{
 			/** @var \BackendTemplate|object $objTemplate */
@@ -49,39 +52,24 @@ class ModuleProjectsReader extends ModuleProjects
 			return $objTemplate->parse();
 		}
 
-		// Set the item from the auto_item parameter
-		if (!isset($_GET['items']) && Config::get('useAutoItem') && isset($_GET['auto_item']))
+
+		// Return an empty string if "auto_item" is not set to combine list and reader on same page
+		if (Input::get('auto_item') === null)
 		{
-			Input::setGet('items', Input::get('auto_item'));
-		}
-
-		// Do not index or cache the page if no project item has been specified
-		if (!Input::get('items'))
-		{
-			/** @var \PageModel $objPage */
-			global $objPage;
-
-			$objPage->noSearch = 1;
-			$objPage->cache = 0;
-
 			return '';
 		}
 
 		$this->projects_archives = $this->sortOutProtected(StringUtil::deserialize($this->projects_archives));
 
-		// Do not index or cache the page if there are no archives
-		if (!is_array($this->projects_archives) || empty($this->projects_archives))
+
+		if (empty($this->projects_archives) || !\is_array($this->projects_archives))
 		{
-			/** @var \PageModel $objPage */
-			global $objPage;
-
-			$objPage->noSearch = 1;
-			$objPage->cache = 0;
-
-			return '';
+			throw new InternalServerErrorException('The projectsreader ID ' . $this->id . ' has no archives specified.');
 		}
 
 		return parent::generate();
+
+
 	}
 
 
@@ -90,101 +78,52 @@ class ModuleProjectsReader extends ModuleProjects
 	 */
 	protected function compile()
 	{
+		
 		/** @var \PageModel $objPage */
 		global $objPage;
 
-		$this->Template->articles = '';
-		$this->Template->referer = 'javascript:history.go(-1)';
-		$this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
+		$this->Template->projects = '';
+
+		$urlGenerator = System::getContainer()->get('contao.routing.content_url_generator');
+
+		// if the overview pages has been defined in the reader module settings
+		if ($this->overviewPage && ($overviewPage = PageModel::findById($this->overviewPage)))
+		{
+			$this->Template->referer = $urlGenerator->generate($overviewPage);
+			$this->Template->back = $this->customLabel ?: $GLOBALS['TL_LANG']['MSC']['newsOverview'];
+		}
 
 		// Get the project item
-		$objArticle = ProjectsModel::findPublishedByParentAndIdOrAlias(Input::get('items'), $this->projects_archives);
+		$objProject = ProjectsModel::findPublishedByParentAndIdOrAlias(Input::get('auto_item'), $this->projects_archives);
 
-		if (null === $objArticle)
+		// The project item does not exist
+		if ($objProject === null)
 		{
-			/** @var \PageError404 $objHandler */
-			$objHandler = new $GLOBALS['TL_PTY']['error_404']();
-			$objHandler->generate($objPage->id);
+			throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
 		}
 
-		$arrProject = $this->parseProject($objArticle);
-		$this->Template->articles = $arrProject;
-
-		// Overwrite the page title (see #2853 and #4955)
-		if ($objArticle->headline != '')
+		// Redirect if the project item has a target URL
+		// Bei 'normalen' Projekten hat $objProject->source den Wert 'default'
+		switch ($objProject->source)
 		{
-			$objPage->pageTitle = strip_tags(StringUtil::stripInsertTags($objArticle->headline));
+			case 'internal':
+			case 'article':
+			case 'external':
+				throw new RedirectResponseException(System::getContainer()->get('contao.routing.content_url_generator')->generate($objProject, array(), UrlGeneratorInterface::ABSOLUTE_URL), 301);
 		}
 
-		// Overwrite the page description
-		if ($objArticle->teaser != '')
+		// Set the default template
+		if (!$this->projects_template)
 		{
-			$objPage->description = $this->prepareMetaDescription($objArticle->teaser);
+			$this->projects_template = 'project_full';
 		}
-
-		// HOOK: comments extension required
-		// if ($objArticle->noComments || !in_array('comments', \ModuleLoader::getActive()))
-		// {
-		// 	$this->Template->allowComments = false;
-
-		// 	return;
-		// }
-
-		/** @var \ProjectArchiveModel $objArchive */
-		$objArchive = $objArticle->getRelated('pid');
-		$this->Template->allowComments = $objArchive->allowComments;
-
-		// Comments are not allowed
-		if (!$objArchive->allowComments)
-		{
-			return;
-		}
-
-		// Adjust the comments headline level
-		$intHl = min(intval(str_replace('h', '', $this->hl)), 5);
-		$this->Template->hlc = 'h' . ($intHl + 1);
-
-		$this->import('Comments');
-		$arrNotifies = array();
-
-		// Notify the system administrator
-		if ($objArchive->notify != 'notify_author')
-		{
-			$arrNotifies[] = $GLOBALS['TL_ADMIN_EMAIL'];
-		}
-
-		// Notify the author
-		if ($objArchive->notify != 'notify_admin')
-		{
-			/** @var \UserModel $objAuthor */
-			if (($objAuthor = $objArticle->getRelated('author')) !== null && $objAuthor->email != '')
-			{
-				$arrNotifies[] = $objAuthor->email;
-			}
-		}
-
-		$objConfig = new \stdClass();
-
-		$objConfig->perPage = $objArchive->perPage;
-		$objConfig->order = $objArchive->sortOrder;
-		$objConfig->template = $this->com_template;
-		$objConfig->requireLogin = $objArchive->requireLogin;
-		$objConfig->disableCaptcha = $objArchive->disableCaptcha;
-		$objConfig->bbcode = $objArchive->bbcode;
-		$objConfig->moderate = $objArchive->moderate;
-
-		$this->Comments->addCommentsToTemplate($this->Template, $objConfig, 'tl_project', $objArticle->id, $arrNotifies);
-
-
 
 
 		// Overwrite the page metadata (see #2853, #4955 and #87)
 		$responseContext = System::getContainer()->get('contao.routing.response_context_accessor')->getResponseContext();
 
-
-		if ($responseContext && $responseContext->has(HtmlHeadBag::class))
+		if ($responseContext?->has(HtmlHeadBag::class))
 		{
-			/** @var HtmlHeadBag $htmlHeadBag */
 			$htmlHeadBag = $responseContext->get(HtmlHeadBag::class);
 			$htmlDecoder = System::getContainer()->get('contao.string.html_decoder');
 
@@ -197,20 +136,49 @@ class ModuleProjectsReader extends ModuleProjects
 				$htmlHeadBag->setTitle($htmlDecoder->inputEncodedToPlainText($objProject->headline));
 			}
 
-			if ($objProject->shortDescription)
+			if ($objProject->description)
 			{
-				$htmlHeadBag->setMetaDescription($htmlDecoder->inputEncodedToPlainText($objProject->shortDescription));
+				$htmlHeadBag->setMetaDescription($htmlDecoder->inputEncodedToPlainText($objProject->description));
 			}
-			elseif ($objProject->longDescription)
+			elseif ($objProject->teaser)
 			{
-				$htmlHeadBag->setMetaDescription($htmlDecoder->htmlToPlainText($objProject->longDescription));
+				$htmlHeadBag->setMetaDescription($htmlDecoder->htmlToPlainText($objProject->teaser));
 			}
 
 			if ($objProject->robots)
 			{
 				$htmlHeadBag->setMetaRobots($objProject->robots);
 			}
+
+			if ($objProject->canonicalLink)
+			{
+				$url = System::getContainer()->get('contao.insert_tag.parser')->replaceInline($objProject->canonicalLink);
+
+				// Ensure absolute links
+				if (!preg_match('#^https?://#', $url))
+				{
+					if (!$request = System::getContainer()->get('request_stack')->getCurrentRequest())
+					{
+						throw new \RuntimeException('The request stack did not contain a request');
+					}
+
+					$url = UrlUtil::makeAbsolute($url, $request->getUri());
+				}
+
+				$htmlHeadBag->setCanonicalUri($url);
+			}
+			elseif (!$this->projects_keepCanonical)
+			{
+				$htmlHeadBag->setCanonicalUri($urlGenerator->generate($objProject, array(), UrlGeneratorInterface::ABSOLUTE_URL));
+			}
 		}
+
+
+		$strProject = $this->parseProject($objProject);
+		$this->Template->project = $strProject;
+
+
+
 
 
 	}
