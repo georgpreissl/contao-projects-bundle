@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace GeorgPreissl\Projects\FrontendModule;
 
 use Contao\System;
@@ -31,6 +29,7 @@ class ModuleProjectsList extends ModuleProjects
 
 	public function generate()
 	{
+		
 		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
 		if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
@@ -76,7 +75,7 @@ class ModuleProjectsList extends ModuleProjects
 	 */
 	protected function compile()
 	{
-
+		
 		$limit = null;
 		$offset = intval($this->skipFirst);
 
@@ -238,7 +237,7 @@ class ModuleProjectsList extends ModuleProjects
         } catch (CategoryNotFoundException $e) {
             throw new PageNotFoundException($e->getMessage(), 0, $e);
         }
-
+		
         if (null === $criteria) {
             return null;
         }

@@ -29,17 +29,25 @@
         <source>(comments: %s)</source>
         <target>(Kommentare: %s)</target>
       </trans-unit>
-      <trans-unit id="MSC.project_items">
+      <trans-unit id="MSC.projects_items">
         <source>%d item(s)</source>
         <target>%d Artikel</target>
       </trans-unit>
-      <trans-unit id="MSC.project_previous">
-        <source>&amp;lt;</source>
-        <target>&amp;lt;</target>
+      <trans-unit id="MSC.projects_first">
+        <source>First project</source>
+        <target>Erstes Projekt</target>
       </trans-unit>
-      <trans-unit id="MSC.project_next">
-        <source>&amp;gt;</source>
-        <target>&amp;gt;</target>
+      <trans-unit id="MSC.projects_last">
+        <source>Last project</source>
+        <target>Letztes Projekt</target>
+      </trans-unit>
+      <trans-unit id="MSC.projects_previous">
+        <source>Previous project</source>
+        <target>Voriges Projekt</target>
+      </trans-unit>
+      <trans-unit id="MSC.projects_next">
+        <source>Next project</source>
+        <target>Nächstes Projekt</target>
       </trans-unit>
       <trans-unit id="MSC.projects_resetCategories.0">
         <source>Show all</source>
@@ -49,6 +57,10 @@
         <source>bbbb</source>
         <target>bbbb</target>
       </trans-unit>
+      <trans-unit id="MSC.projectOverview">
+        <source>To the project overview</source>
+        <target>zur Projektübersicht</target>
+      </trans-unit>      
     </body>
   </file>
 </xliff>

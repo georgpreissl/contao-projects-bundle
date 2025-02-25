@@ -10,14 +10,14 @@
 
 namespace GeorgPreissl\Projects\FrontendModule;
 
+use Contao\System;
+use Contao\StringUtil;
+use Contao\Input;
+use Contao\Date;
+use Contao\BackendTemplate;
+use GeorgPreissl\Projects\Model\ProjectsModel;
 
-
-/**
- * Front end module "project archive".
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
-class ModuleProjectsArchive extends \ModuleProjects
+class ModuleProjectsArchive extends ModuleProjects
 {
 
 	/**
@@ -34,12 +34,14 @@ class ModuleProjectsArchive extends \ModuleProjects
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
+		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+		if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
 		{
 			/** @var \BackendTemplate|object $objTemplate */
-			$objTemplate = new \BackendTemplate('be_wildcard');
+			$objTemplate = new BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['projectsarchive'][0]) . ' ###';
+			$objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['projectsarchive'][0] . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -48,7 +50,7 @@ class ModuleProjectsArchive extends \ModuleProjects
 			return $objTemplate->parse();
 		}
 
-		$this->projects_archives = $this->sortOutProtected(deserialize($this->projects_archives));
+		$this->projects_archives = $this->sortOutProtected(StringUtil::deserialize($this->projects_archives));
 
 		// No project archives available
 		if (!is_array($this->projects_archives) || empty($this->projects_archives))
@@ -85,9 +87,9 @@ class ModuleProjectsArchive extends \ModuleProjects
 		$intBegin = 0;
 		$intEnd = 0;
 
-		$intYear = \Input::get('year');
-		$intMonth = \Input::get('month');
-		$intDay = \Input::get('day');
+		$intYear = Input::get('year');
+		$intMonth = Input::get('month');
+		$intDay = Input::get('day');
 
 		// Jump to the current period
 		if (!isset($_GET['year']) && !isset($_GET['month']) && !isset($_GET['day']) && $this->project_jumpToCurrent != 'all_items')
@@ -115,7 +117,7 @@ class ModuleProjectsArchive extends \ModuleProjects
 			if ($intYear)
 			{
 				$strDate = $intYear;
-				$objDate = new \Date($strDate, 'Y');
+				$objDate = new Date($strDate, 'Y');
 				$intBegin = $objDate->yearBegin;
 				$intEnd = $objDate->yearEnd;
 				$this->headline .= ' ' . date('Y', $objDate->tstamp);
@@ -123,18 +125,18 @@ class ModuleProjectsArchive extends \ModuleProjects
 			elseif ($intMonth)
 			{
 				$strDate = $intMonth;
-				$objDate = new \Date($strDate, 'Ym');
+				$objDate = new Date($strDate, 'Ym');
 				$intBegin = $objDate->monthBegin;
 				$intEnd = $objDate->monthEnd;
-				$this->headline .= ' ' . \Date::parse('F Y', $objDate->tstamp);
+				$this->headline .= ' ' . Date::parse('F Y', $objDate->tstamp);
 			}
 			elseif ($intDay)
 			{
 				$strDate = $intDay;
-				$objDate = new \Date($strDate, 'Ymd');
+				$objDate = new Date($strDate, 'Ymd');
 				$intBegin = $objDate->dayBegin;
 				$intEnd = $objDate->dayEnd;
-				$this->headline .= ' ' . \Date::parse($objPage->dateFormat, $objDate->tstamp);
+				$this->headline .= ' ' . Date::parse($objPage->dateFormat, $objDate->tstamp);
 			}
 			elseif ($this->project_jumpToCurrent == 'all_items')
 			{
@@ -149,13 +151,13 @@ class ModuleProjectsArchive extends \ModuleProjects
 			$objHandler->generate($objPage->id);
 		}
 
-		$this->Template->articles = array();
+		$this->Template->projects = array();
 
 		// Split the result
 		if ($this->perPage > 0)
 		{
 			// Get the total number of items
-			$intTotal = \ProjectModel::countPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives);
+			$intTotal = ProjectsModel::countPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives);
 
 			if ($intTotal > 0)
 			{
@@ -186,17 +188,17 @@ class ModuleProjectsArchive extends \ModuleProjects
 		// Get the project items
 		if (isset($limit))
 		{
-			$objArticles = \ProjectModel::findPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives, $limit, $offset);
+			$objArticles = ProjectsModel::findPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives, $limit, $offset);
 		}
 		else
 		{
-			$objArticles = \ProjectModel::findPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives);
+			$objArticles = ProjectsModel::findPublishedFromToByPids($intBegin, $intEnd, $this->projects_archives);
 		}
 
 		// Add the articles
 		if ($objArticles !== null)
 		{
-			$this->Template->articles = $this->parseProjects($objArticles);
+			$this->Template->projects = $this->parseProjects($objArticles);
 		}
 
 		$this->Template->headline = trim($this->headline);

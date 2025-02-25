@@ -21,6 +21,7 @@ class ProjectsDataContainerListener
 
     public function __invoke(): void
     {
+        
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $sorting = $session->getBag('contao_backend')->get('sorting')['tl_projects'] ?? null;
 

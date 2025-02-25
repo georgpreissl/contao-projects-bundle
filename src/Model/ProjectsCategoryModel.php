@@ -390,20 +390,19 @@ WHERE {$relation['reference_field']} IN (SELECT id FROM tl_projects WHERE pid IN
         return ProjectsModel::countBy($columns, $values);
     }
 
+
+
+
     /**
      * Get all subcategory IDs.
-     *
-     * @param array|int $category
-     *
-     * @return array
      */
-    public static function getAllSubcategoriesIds($category)
+    public static function getAllSubcategoriesIds(array|int|string $category): array
     {
-        $ids = Database::getInstance()->getChildRecords($category, static::$strTable, false, (array) $category, (!BE_USER_LOGGED_IN ? 'published=1' : ''));
-        $ids = \array_map('intval', $ids);
+        $ids = Database::getInstance()->getChildRecords($category, static::$strTable, false, (array) $category, !self::isPreviewMode([]) ? 'published=1' : '');
 
-        return $ids;
+        return array_map('intval', $ids);
     }
+
 
     /**
      * {@inheritdoc}

@@ -10,7 +10,14 @@
 		<?php endif; ?>
 
 		<div class="project_full__title">
+
+
 			<h1 class="project_full__hl" itemprop="name" ><?= $this->projectHeadline ?></h1>
+
+			<?php if ($this->hasSubHeadline): ?>
+				<h2 class="project_full__sl" ><?= $this->subHeadline ?></h2>
+			<?php endif; ?>
+
 
 			<?php //dump($this->categories) ?>
 			<?php if ($this->categories): ?>
@@ -46,14 +53,16 @@
 						<span class="project_full__facts-value"><?= $this->location ?></span>
 					</div>
 				<?php endif; ?>
-				<?php if ($this->timestamp): ?>
+				<?php if ($this->dateOfCompletion): ?>
 					<div class="project_full__facts-item">
 						<span class="project_full__facts-label">Fertigstellung:</span>
-						<span class="project_full__facts-value">
-							<time datetime="<?= $this->datetime ?>" itemprop="startDate">
-								<?php //echo $this->parseDate("F Y", $this->timestamp); ?>
-							</time>	
-						</span>
+						<span class="project_full__facts-value"><?= $this->dateOfCompletion ?></span>
+					</div>
+				<?php endif; ?>
+				<?php if ($this->period): ?>
+					<div class="project_full__facts-item">
+						<span class="project_full__facts-label">Zeitraum:</span>
+						<span class="project_full__facts-value"><?= $this->period ?></span>
 					</div>
 				<?php endif; ?>
 

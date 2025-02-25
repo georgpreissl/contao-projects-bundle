@@ -1,7 +1,5 @@
 <?php
 
-
-
 namespace GeorgPreissl\Projects\FrontendModule;
 
 use Contao\StringUtil;
@@ -14,22 +12,21 @@ use Contao\PageModel;
 use Contao\ContentModel;
 use Contao\CommentsModel;
 use Contao\File;
+use Contao\Input;
 use GeorgPreissl\Projects\Projects;
 use GeorgPreissl\Projects\ProjectsCategoriesManager;
 use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use GeorgPreissl\Projects\Model\ProjectsArchiveModel;
 use GeorgPreissl\Projects\Model\ProjectsModel;
+use GeorgPreissl\Projects\ProjectsSiblingNavigation;
 use Contao\CoreBundle\Security\ContaoCorePermissions;
 use Contao\CoreBundle\Routing\ContentUrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Filesystem\Path;
 
 
 abstract class ModuleProjects extends Module
 {
-
-
-	// private static $arrUrlCache = array();
-
 
 	protected function sortOutProtected($arrArchives)
 	{
@@ -59,6 +56,8 @@ abstract class ModuleProjects extends Module
 		return $arrArchives;
 	}
 
+
+
 	/**
 	 * Parse an item and return it as string
 	 *
@@ -71,9 +70,11 @@ abstract class ModuleProjects extends Module
 	 */
 	protected function parseProject($objProject, $blnAddArchive=false, $strClass='', $intCount=0)
 	{
-		global $objPage;
+
 
 		$objTemplate = new FrontendTemplate($this->projects_template ?: 'project_latest');
+
+		// das Array 'arrData' des Objekts '$objTemplate' wird befüllt 
 		$objTemplate->setData($objProject->row());
 
 		if ($objProject->cssClass)
@@ -98,9 +99,10 @@ abstract class ModuleProjects extends Module
 		// dump($this->objFiles);
 
 		$images = array();
-		$arrGallery = array();
+		$projectDir = System::getContainer()->getParameter('kernel.project_dir');
+		
+		
 		$test = array();
-		$auxDate = array();
 		$objFiles = $this->objFiles;
 
 		if ($this->objFiles != null)
@@ -111,7 +113,7 @@ abstract class ModuleProjects extends Module
 			{
 
 				// Continue if the files has been processed or does not exist
-				if (isset($images[$objFiles->path]) || !file_exists(System::getContainer()->getParameter('kernel.project_dir') . '/' . $objFiles->path))
+				if (isset($images[$objFiles->path]) || !file_exists(Path::join($projectDir, $objFiles->path)))
 				{
 					continue;
 				}
@@ -126,20 +128,11 @@ abstract class ModuleProjects extends Module
 						continue;
 					}
 
+					$row = $objFiles->row();
+					$row['mtime'] = $objFile->mtime;
+	
 					// Add the image
-					$images[$objFiles->path] = array
-					(
-						'id'         => $objFiles->id,
-						'uuid'       => $objFiles->uuid,
-						'name'       => $objFile->basename,
-						'singleSRC'  => $objFiles->path,
-						'filesModel' => $objFiles->current()
-					);
-
-					$auxDate[] = $objFile->mtime;
-
-
-					
+					$images[$objFiles->path] = $row;
 				}
 
 				// Folders
@@ -161,23 +154,17 @@ abstract class ModuleProjects extends Module
 						}
 
 						$objFile = new File($objSubfiles->path);
-						// dump($objSubfiles->meta);
+						
 						if (!$objFile->isImage)
 						{
 							continue;
 						}
 
+						$row = $objSubfiles->row();
+						$row['mtime'] = $objFile->mtime;
+	
 						// Add the image
-						$images[$objSubfiles->path] = array
-						(
-							'id'         => $objSubfiles->id,
-							'uuid'       => $objSubfiles->uuid,
-							'name'       => $objFile->basename,
-							'singleSRC'  => $objSubfiles->path,
-							'filesModel' => $objSubfiles->current()
-						);
-
-						$auxDate[] = $objFile->mtime;
+						$images[$objSubfiles->path] = $row;
 					}
 				}
 
@@ -186,7 +173,6 @@ abstract class ModuleProjects extends Module
 			}
 
 		}
-// dump($objProject->sortBy);
 
 		// Sort array
 		switch ($objProject->sortBy)
@@ -220,11 +206,6 @@ abstract class ModuleProjects extends Module
 				});
 				break;
 
-			// Deprecated since Contao 4.0, to be removed in Contao 5.0
-			case 'meta':
-				trigger_deprecation('contao/core-bundle', '4.0', 'The "meta" key in "Contao\ContentGallery::compile()" has been deprecated and will no longer work in Contao 5.0.');
-				// no break
-
 			case 'custom':
 				break;
 
@@ -234,45 +215,26 @@ abstract class ModuleProjects extends Module
 				break;
 		}
 
+		$arrGallery = array();
 		$images = array_values($images);
-
-
-		$i = 0;
-		$strLightboxId = 'lb' . $objProject->id;
-
-
-		// $imgSize = $objProject->size ?: null;
-
-		// // Override the default image size
-		// if ($this->projects_imgSizeGallery)
-		// {
-		// 	$size = StringUtil::deserialize($this->projects_imgSizeGallery);
-
-		// 	if ($size[0] > 0 || $size[1] > 0 || is_numeric($size[2]) || ($size[2][0] ?? null) === '_')
-		// 	{
-		// 		$imgSize = $this->imgSize;
-		// 	}
-		// }
 
 		$figureBuilder = System::getContainer()
 			->get('contao.image.studio')
 			->createFigureBuilder()
-			->setSize($this->projects_imgSizeGallery);
-
+			->setSize($this->projects_imgSizeGallery)
+			->setLightboxGroupIdentifier('lb' . $this->id)
+			->enableLightbox($objProject->galleryFullsize);
 
 		foreach ($images as $image) {
+			$figure = $figureBuilder
+			->fromId($image['id'])
+			->build();
 
-
-				$figure = $figureBuilder
-				->fromId($image['id'])
-				->build();
-
-				$cellData = $figure->getLegacyTemplateData();
-				$cellData['figure'] = $figure;				
-				$arrGallery[] = (object) $cellData;
-
+			$cellData = $figure->getLegacyTemplateData();
+			$cellData['figure'] = $figure;				
+			$arrGallery[] = (object) $cellData;
 		}
-// dump($intCount);
+
 		$objTemplate->gallery = $arrGallery;
 
 		$objTemplate->class = $strClass;
@@ -287,7 +249,7 @@ abstract class ModuleProjects extends Module
 		$objTemplate->hasOrderValue = $objProject->orderValue ? true : false;
 		$objTemplate->hasShare = $objProject->share ? true : false;
 		$objTemplate->archive = ProjectsArchiveModel::findById($objProject->pid);
-		$objTemplate->count = $intCount; // see #5708
+		$objTemplate->count = $intCount;
 		$objTemplate->text = '';
 		$objTemplate->hasText = true;
 		$objTemplate->hasTeaser = false;
@@ -303,7 +265,7 @@ abstract class ModuleProjects extends Module
 		if ($objProject->teaser)
 		{
 			$objTemplate->hasTeaser = true;
-			$objTemplate->teaser = $objArticle->teaser;
+			$objTemplate->teaser = $objProject->teaser;
 			$objTemplate->teaser = StringUtil::encodeEmail($objTemplate->teaser);
 		}
 
@@ -339,7 +301,9 @@ abstract class ModuleProjects extends Module
 			$objTemplate->hasText = (ContentModel::countPublishedByPidAndTable($objProject->id, 'tl_projects') > 0);
 		}
 
-		
+		// global $objPage;
+
+		$objTemplate->dateOfCompletion = Date::parse('F, Y',$objTemplate->dateOfCompletion);		
 
 		// Add the meta information
 		$objTemplate->timestamp = $objProject->date;
@@ -375,7 +339,7 @@ abstract class ModuleProjects extends Module
 				->setOverwriteMetadata($objProject->getOverwriteMetadata())
 				->enableLightbox((bool) $objProject->fullsize);
 
-			// If the external link is opened in a new window, open the image link in a new window as well (see #210)
+			// If the external link is opened in a new window, open the image link in a new window as well
 			if ('external' === $objTemplate->source && $objTemplate->target)
 			{
 				$figureBuilder->setLinkAttribute('target', '_blank');
@@ -420,14 +384,10 @@ abstract class ModuleProjects extends Module
 			return $jsonLd;
 		};
 
+
+		// Add the categories
+
 		$arrData = $objProject->row();
-		// $arrData enthält alle Infos zu einem Projekt
-		// dump($arrData);
-        
-
-
-
-
 		
 		$categories = ProjectsCategoryModel::findPublishedByProject($arrData['id']);
 
@@ -457,10 +417,15 @@ abstract class ModuleProjects extends Module
 			$objTemplate->categories = $arrCategories;	
 		}
 		
-	
+
+
 
 		return $objTemplate->parse();
 	}
+
+
+
+
 
 
 	/**
@@ -473,6 +438,7 @@ abstract class ModuleProjects extends Module
 	 */
 	protected function parseProjects($objProjects, $blnAddArchive=false)
 	{
+		
 		$limit = $objProjects->count();
 
 		if ($limit < 1)
@@ -481,90 +447,20 @@ abstract class ModuleProjects extends Module
 		}
 
 		$count = 0;
-		$arrArticles = array();
+		$arrProjects = array();
 
 		while ($objProjects->next())
 		{
 			/** @var \ProjectsModel $objProject */
 			$objProject = $objProjects->current();
 
-			$arrArticles[] = $this->parseProject($objProject, $blnAddArchive, ((++$count == 1) ? ' first' : '') . (($count == $limit) ? ' last' : '') . ((($count % 2) == 0) ? ' odd' : ' even'), $count);
+			$arrProjects[] = $this->parseProject($objProject, $blnAddArchive, ((++$count == 1) ? ' first' : '') . (($count == $limit) ? ' last' : '') . ((($count % 2) == 0) ? ' odd' : ' even'), $count);
 		}
 
-		return $arrArticles;
+		// return the array with HTML code
+		return $arrProjects;
 	}
 
-
-	/**
-	 * Return the meta fields of a project article as array
-	 *
-	 * @param \ProjectsModel $objProject
-	 *
-	 * @return array
-	 */
-	protected function getMetaFields($objProject)
-	{
-		$meta = StringUtil::deserialize($this->project_metaFields);
-
-		if (!is_array($meta))
-		{
-			return array();
-		}
-
-		/** @var \PageModel $objPage */
-		global $objPage;
-
-		$return = array();
-
-		foreach ($meta as $field)
-		{
-			switch ($field)
-			{
-				case 'date':
-					$return['date'] = Date::parse($objPage->datimFormat, $objProject->date);
-					break;
-
-				// case 'author':
-				// 	/** @var \UserModel $objAuthor */
-				// 	if (($objAuthor = $objProject->getRelated('author')) !== null)
-				// 	{
-				// 		$return['author'] = $GLOBALS['TL_LANG']['MSC']['by'] . ' ' . $objAuthor->name;
-				// 	}
-				// 	break;
-
-				case 'comments':
-					// if ($objProject->noComments || !in_array('comments', \ModuleLoader::getActive()) || $objProject->source != 'default')
-					// {
-					// 	break;
-					// }
-					$intTotal = CommentsModel::countPublishedBySourceAndParent('tl_project', $objProject->id);
-					$return['ccount'] = $intTotal;
-					$return['comments'] = sprintf($GLOBALS['TL_LANG']['MSC']['commentCount'], $intTotal);
-					break;
-			}
-		}
-
-		return $return;
-	}
-
-
-		/**
-	 * Generate a URL and return it as string
-	 *
-	 * @param ProjectsModel $objItem
-	 * @param boolean   $blnAddArchive
-	 *
-	 * @return string
-	 *
-	 * @deprecated Deprecated since Contao 4.1, to be removed in Contao 5.
-	 *             Use News::generateNewsUrl() instead.
-	 */
-	protected function generateProjectUrl($objItem, $blnAddArchive=false)
-	{
-		trigger_deprecation('contao/news-bundle', '4.1', 'Using "Contao\ModuleNews::generateNewsUrl()" has been deprecated and will no longer work in Contao 5.0. Use "Contao\News::generateNewsUrl()" instead.');
-
-		return Projects::generateProjectUrl($objItem, $blnAddArchive);
-	}
 
 
 
@@ -574,26 +470,26 @@ abstract class ModuleProjects extends Module
 	 * Generate a link and return it as string
 	 *
 	 * @param string    $strLink
-	 * @param NewsModel $objArticle
+	 * @param NewsModel $objProject
 	 * @param boolean   $blnAddArchive
 	 * @param boolean   $blnIsReadMore
 	 *
 	 * @return string
 	 */
-	protected function generateLink($strLink, $objArticle, $blnAddArchive=false, $blnIsReadMore=false)
+	protected function generateLink($strLink, $objProject, $blnAddArchive=false, $blnIsReadMore=false)
 	{
-		$blnIsInternal = $objArticle->source != 'external';
+		$blnIsInternal = $objProject->source != 'external';
 		// dump($blnIsInternal);
 		$strReadMore = $blnIsInternal ? $GLOBALS['TL_LANG']['MSC']['readMore'] : $GLOBALS['TL_LANG']['MSC']['open'];
-		$strArticleUrl = $this->generateContentUrl($objArticle, $blnAddArchive);
+		$strProjectUrl = $this->generateContentUrl($objProject, $blnAddArchive);
 
 		return \sprintf(
 			'<a href="%s" title="%s"%s>%s%s</a>',
-			$strArticleUrl,
-			StringUtil::specialchars(\sprintf($strReadMore, $blnIsInternal ? $objArticle->headline : $strArticleUrl), true),
-			$objArticle->target && !$blnIsInternal ? ' target="_blank" rel="noreferrer noopener"' : '',
+			$strProjectUrl,
+			StringUtil::specialchars(\sprintf($strReadMore, $blnIsInternal ? $objProject->headline : $strProjectUrl), true),
+			$objProject->target && !$blnIsInternal ? ' target="_blank" rel="noreferrer noopener"' : '',
 			$strLink,
-			$blnIsReadMore && $blnIsInternal ? '<span class="invisible"> ' . $objArticle->headline . '</span>' : ''
+			$blnIsReadMore && $blnIsInternal ? '<span class="invisible"> ' . $objProject->headline . '</span>' : ''
 		);
 	}
 

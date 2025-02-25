@@ -62,6 +62,7 @@ class ProjectsArchiveListener
      */
     public function onLoadCallback()
     {
+        dump('ProjectsArchiveListener');
         if (!$this->permissionChecker->canUserManageCategories()) {
             unset($GLOBALS['TL_DCA']['tl_projects_archive']['list']['global_operations']['categories']);
         }

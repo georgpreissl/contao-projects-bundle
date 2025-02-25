@@ -12,41 +12,55 @@ use Contao\System;
 /**
  * Add palettes to tl_module
  */
+
+// list module
+
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectslist'] = '
 {title_legend},name,headline,type;
 {config_legend},projects_archives,projects_readerModule,numberOfItems,projects_featured,projects_order,skipFirst,perPage;
 {projects_related_legend},projects_relatedOnly,projects_includeCurrent,projects_disableEmpty;
-{template_legend:hide},projects_metaFields,projects_template,customTpl;
+{template_legend:hide},projects_template,customTpl;
 {image_legend:hide},imgSize;
 {categories_legend:hide},projects_filterCategories,projects_filterCategoriesCumulative,projects_filterCategoriesUnion,projects_relatedCategories,projects_includeSubcategories,projects_filterDefault,projects_filterPreserve,projects_categoryFilterPage,projects_categoryImgSize;
 {protected_legend:hide},protected;
 {expert_legend:hide},guests,cssID';
 
+
+// reader module
+
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsreader']  = '
 {title_legend},name,headline,type;
-{config_legend},projects_archives;
+{config_legend},projects_archives,projects_keepCanonical;
 {projects_overview_legend},overviewPage,customLabel;
+{projects_sibling_legend},projects_siblingNavigation,projects_siblingShowFirstLast,projects_siblingListModule;
 {projects_related_legend},projects_showRelated;
-{template_legend:hide},projects_metaFields,projects_template,customTpl;
-{image_legend:hide},imgSize;
+{template_legend:hide},projects_template,customTpl;
+{image_legend:hide},imgSize,projects_imgSizeGallery;
 {protected_legend:hide},protected;
 {expert_legend:hide},guests,cssID,space';
+
+
+// archive modules
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsarchive'] = '
 {title_legend},name,headline,type;
 {config_legend},projects_archives,projects_filterCategories,projects_filterDefault,projects_filterPreserve,projects_jumpToCurrent,projects_readerModule,perPage,projects_format;
-{template_legend:hide},projects_metaFields,projects_template,customTpl;
+{template_legend:hide},projects_template,customTpl;
 {image_legend:hide},imgSize;
 {protected_legend:hide},protected;
 {expert_legend:hide},guests,cssID,space';
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsmenu'] = '
 {title_legend},name,headline,type;
-{config_legend},projects_archives,projects_filterCategories,projects_filterDefault,projects_filterPreserve,projects_showQuantity,projects_format,projects_startDay,projects_order;
+{config_legend},projects_archives,projects_showQuantityArchives,projects_format,projects_order;
+{categories_legend:hide},projects_filterCategories,projects_filterDefault,projects_filterPreserve,projects_showQuantity;
 {redirect_legend},jumpTo;
 {template_legend:hide},customTpl;
 {protected_legend:hide},protected;
 {expert_legend:hide},guests,cssID,space';
+
+
+// sibling navigation module
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsnavigation'] = '
 {title_legend},name,headline,type;
@@ -56,9 +70,8 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['projectsnavigation'] = '
 {expert_legend:hide},guests,cssID,space;
 {invisible_legend:hide},invisible,start,stop';
 
-$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_customCategories';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_relatedCategories';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_showRelated';
+
+// categories modules
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories'] = '
 {title_legend},name,headline,type;
@@ -70,10 +83,28 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories'] = '
 {protected_legend:hide},protected;
 {expert_legend:hide},guests,cssID,space';
 
+$GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories_cumulative'] = '
+{title_legend},name,headline,type;
+{config_legend},projects_archives,projects_showQuantity,projects_resetCategories,projects_enableCanonicalUrls,projects_includeSubcategories,projects_filterCategoriesUnion;
+{reference_legend:hide},projects_categoriesRoot,projects_customCategories;
+{redirect_legend:hide},jumpTo;{template_legend:hide},navigationTpl,customTpl;
+{image_legend:hide},projects_categoryImgSize;
+{protected_legend:hide},protected;
+{expert_legend:hide},guests,cssID,space';
 
+$GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories_cumulativehierarchical'] = '
+{title_legend},name,headline,type;
+{config_legend},projects_archives,projects_showQuantity,projects_resetCategories,projects_showEmptyCategories,projects_enableCanonicalUrls,projects_filterCategoriesUnion,projects_includeSubcategories,showLevel;
+{reference_legend:hide},projects_categoriesRoot,projects_customCategories;
+{redirect_legend:hide},projects_forceCategoryUrl,jumpTo;
+{template_legend:hide},navigationTpl,customTpl;
+{image_legend:hide},projects_categoryImgSize;
+{protected_legend:hide},protected;
+{expert_legend:hide},guests,cssID,space';
 
-$GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories_cumulative'] = '{title_legend},name,headline,type;{config_legend},projects_archives,projects_showQuantity,projects_resetCategories,projects_enableCanonicalUrls,projects_includeSubcategories,projects_filterCategoriesUnion;{reference_legend:hide},projects_categoriesRoot,projects_customCategories;{redirect_legend:hide},jumpTo;{template_legend:hide},navigationTpl,customTpl;{image_legend:hide},projects_categoryImgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
-$GLOBALS['TL_DCA']['tl_module']['palettes']['projectscategories_cumulativehierarchical'] = '{title_legend},name,headline,type;{config_legend},projects_archives,projects_showQuantity,projects_resetCategories,projects_showEmptyCategories,projects_enableCanonicalUrls,projects_filterCategoriesUnion,projects_includeSubcategories,showLevel;{reference_legend:hide},projects_categoriesRoot,projects_customCategories;{redirect_legend:hide},projects_forceCategoryUrl,jumpTo;{template_legend:hide},navigationTpl,customTpl;{image_legend:hide},projects_categoryImgSize;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_customCategories';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_relatedCategories';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'projects_showRelated';
 
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['projects_customCategories'] = 'projects_categories';
 $GLOBALS['TL_DCA']['tl_module']['subpalettes']['projects_relatedCategories'] = 'projects_relatedCategoriesOrder,projects_categoriesRoot';
@@ -87,16 +118,15 @@ $GLOBALS['TL_DCA']['tl_module']['subpalettes']['projects_showRelated'] = 'projec
  */
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_archives'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'checkbox',
 	'options_callback'        => array('tl_module_projects', 'getProjectArchives'),
 	'eval'                    => array('multiple'=>true, 'mandatory'=>true),
-	'sql'                     => "blob NULL"
+	'sql'                     => "blob NULL",
+	'relation'                => array('table'=>'tl_projects_archive', 'type'=>'hasMany', 'load'=>'lazy')
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_featured'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'select',
 	'options'                 => array('all_items', 'featured', 'unfeatured', 'featured_first'),
 	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
@@ -116,7 +146,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_jumpToCurrent'] = array
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_readerModule'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'select',
 	'options_callback'        => array('tl_module_projects', 'getReaderModules'),
 	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
@@ -124,19 +153,8 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_readerModule'] = array
 	'sql'                     => "int(10) unsigned NOT NULL default 0"
 );
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['projects_metaFields'] = array
-(
-	'exclude'                 => true,
-	'inputType'               => 'checkbox',
-	'options'                 => array('date', 'author', 'comments'),
-	'reference'               => &$GLOBALS['TL_LANG']['MSC'],
-	'eval'                    => array('multiple'=>true),
-	'sql'                     => "varchar(255) COLLATE ascii_bin NOT NULL default 'a:2:{i:0;s:4:\"date\";i:1;s:6:\"author\";}'"
-);
-
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_template'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'select',
 	'options_callback' => static function ()
 	{
@@ -148,7 +166,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_template'] = array
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_format'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'select',
 	'options'                 => array('project_day', 'project_month', 'project_year'),
 	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
@@ -156,11 +173,19 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_format'] = array
 	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default 'project_month'"
 );
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_imgSizeGallery'] = array
+(
+	'inputType'               => 'imageSize',
+	'reference'               => &$GLOBALS['TL_LANG']['MSC'],
+	'eval'                    => array('rgxp'=>'natural', 'includeBlankOption'=>true, 'nospace'=>true, 'helpwizard'=>true, 'tl_class'=>'w50'),
+	'options_callback' => static function () {
+		return System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance());
+	},
+	'sql'                     => "varchar(128) COLLATE ascii_bin NOT NULL default ''"
+);
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_startDay'] = array
 (
-	'label'                   => &$GLOBALS['TL_LANG']['tl_module']['project_startDay'],
-	'default'                 => 0,
-	'exclude'                 => true,
 	'inputType'               => 'select',
 	'options'                 => array(0, 1, 2, 3, 4, 5, 6),
 	'reference'               => &$GLOBALS['TL_LANG']['DAYS'],
@@ -168,28 +193,52 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_startDay'] = array
 	'sql'                     => "smallint(5) unsigned NOT NULL default '0'"
 );
 
-
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_order'] = array
+(
+	'inputType'               => 'select',
+	'options_callback'        => array('tl_module_projects', 'getSortingOptions'),
+	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default 'order_date_desc'"
+);
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_showQuantity'] = array
 (
-	'exclude'                 => true,
 	'inputType'               => 'checkbox',
 	'sql'                     => "char(1) COLLATE ascii_bin NOT NULL default ''"
 );
 
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_showQuantityArchives'] = array
+(
+	'inputType'               => 'checkbox',
+	'sql'                     => array('type' => 'boolean', 'default' => false)
+);
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_keepCanonical'] = array
+(
+	'inputType'               => 'checkbox',
+	'eval'                    => array('tl_class'=>'w50'),
+	'sql'                     => array('type' => 'boolean', 'default' => false)
+);
+
+
+/*
+ * Fields for the categories management
+ */
+
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_categories'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['projects_categories'],
     'exclude'                 => true,
-    'inputType'               => 'projectCategoriesPicker',
+    'inputType'               => 'picker',
     'foreignKey'              => 'tl_projects_category.title',
     'eval'                    => ['multiple'=>true, 'fieldType'=>'checkbox'],
-    'sql'                     => ['type' => 'blob', 'notnull' => false]
+    'sql'                     => ['type' => 'blob', 'notnull' => false],
+	'relation'                => ['type' => 'hasMany', 'load' => 'lazy'],
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_customCategories'] = array
 (
-    'label'                   => &$GLOBALS['TL_LANG']['tl_module']['projects_customCategories'],
     'exclude'                 => true,
     'inputType'               => 'checkbox',
     'eval'                    => array('submitOnChange'=>true, 'tl_class'=>'clr'),
@@ -240,7 +289,6 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_includeSubcategories'] = [
 ];
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_filterCategoriesUnion'] = [
-    'label' => &$GLOBALS['TL_LANG']['tl_module']['projects_filterCategoriesUnion'],
     'exclude' => true,
     'inputType' => 'checkbox',
     'eval' => ['tl_class' => 'clr'],
@@ -304,10 +352,11 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_categoriesRoot'] = array
 (
     'label'                   => &$GLOBALS['TL_LANG']['tl_module']['projects_categoriesRoot'],
     'exclude'                 => true,
-    'inputType'               => 'projectsCategoriesPicker',
+    'inputType'               => 'picker',
     'foreignKey'              => 'tl_projects_category.title',
     'eval'                    => array('fieldType'=>'radio','tl_class' => 'clr'),
-    'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0]
+    'sql'                     => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
+	'relation' => ['type' => 'hasMany', 'load' => 'lazy']
 );
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['projects_categoryFilterPage'] = [
@@ -318,6 +367,37 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_categoryFilterPage'] = [
     'sql' => ['type' => 'integer', 'unsigned' => true, 'default' => 0],
 ];
 
+
+/*
+ * Fields for the sibling navigation
+ */
+
+ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_siblingNavigation'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['projects_siblingNavigation'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'w50 m12'],
+    'sql' => "char(1) NOT NULL default ''",
+];
+
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_siblingShowFirstLast'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_module']['siblingShowFirstLast'],
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['tl_class' => 'w50 m12'],
+    'sql' => "char(1) NOT NULL default ''",
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['projects_siblingListModule'] = array
+(
+	'exclude'                 => true,
+	'inputType'               => 'select',
+	'options_callback'        => array('tl_module_projects', 'getListModules'),
+	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
+	'eval'                    => array('includeBlankOption'=>true, 'tl_class'=>'w50'),
+	'sql'                     => "int(10) unsigned NOT NULL default 0"
+);
 
 
 
@@ -360,7 +440,9 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['projects_includeCurrent'] = [
 
 
 
-
+/*
+ * Fields for the sibling navigation
+ */
 
 
 
@@ -372,22 +454,10 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['siblingShowFirstLast'] = [
     'sql' => "char(1) NOT NULL default ''",
 ];
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['projects_order'] = array
-(
-	'exclude'                 => true,
-	'inputType'               => 'select',
-	'options_callback'        => array('tl_module_projects', 'getSortingOptions'),
-	'reference'               => &$GLOBALS['TL_LANG']['tl_module'],
-	'eval'                    => array('tl_class'=>'w50'),
-	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default 'order_date_desc'"
-);
 
-$GLOBALS['TL_DCA']['tl_module']['fields']['projects_keepCanonical'] = array
-(
-	'inputType'               => 'checkbox',
-	'eval'                    => array('tl_class'=>'w50'),
-	'sql'                     => array('type' => 'boolean', 'default' => false)
-);
+
+
+
 
 // $GLOBALS['TL_DCA']['tl_module']['fields']['projects_order']['options_callback'] = function (DataContainer $dc) {
 // 	if ($dc->activeRecord && 'sibling_navigation_projects' === $dc->activeRecord->type) {
@@ -438,19 +508,9 @@ PaletteManipulator::create()
 /**
  * Provide miscellaneous methods that are used by the data configuration array.
  *
- * @author Leo Feyer <https://github.com/leofeyer>
  */
 class tl_module_projects extends Backend
 {
-
-	/**
-	 * Import the back end user object
-	 */
-	// public function __construct()
-	// {
-	// 	parent::__construct();
-	// 	$this->import('BackendUser', 'User');
-	// }
 
 
 	/**
@@ -501,6 +561,24 @@ class tl_module_projects extends Backend
 	}
 
 
+	/**
+	 * Get all project list modules and return them as array
+	 *
+	 * @return array
+	 */
+	public function getListModules()
+	{
+		$arrModules = array();
+		$objModules = $this->Database->execute("SELECT m.id, m.name, t.name AS theme FROM tl_module m LEFT JOIN tl_theme t ON m.pid=t.id WHERE m.type='projectslist' ORDER BY t.name, m.name");
+		while ($objModules->next())
+		{
+			$arrModules[$objModules->theme][$objModules->id] = $objModules->name . ' (ID ' . $objModules->id . ')';
+		}
+
+		return $arrModules;
+	}
+
+
 
 	/**
 	 * Return the sorting options
@@ -515,7 +593,7 @@ class tl_module_projects extends Backend
 		{
 			return array('order_date_asc', 'order_date_desc');
 		}
-
+		
 		return array('order_user_asc','order_user_desc','order_date_asc', 'order_date_desc', 'order_headline_asc', 'order_headline_desc', 'order_random');
 	}
 

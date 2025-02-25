@@ -25,8 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 $GLOBALS['BE_MOD']['content']['projects'] = array
 (
 	'tables'      => array('tl_projects_archive', 'tl_projects', 'tl_content', 'tl_projects_category'),
-	'table'       => array(TableWizard::class, 'importTable'),
-	'list'        => array(ListWizard::class, 'importList')
+	'table'       => array(BackendCsvImportController::class, 'importTableWizardAction'),
+	'list'        => array(BackendCsvImportController::class, 'importListWizardAction')	
 );
 $GLOBALS['BE_MOD']['design']['projectspdfexport'] = array
 (
@@ -72,28 +72,3 @@ $GLOBALS['TL_MODELS']['tl_projects'] = ProjectsModel::class;
 $GLOBALS['TL_MODELS']['tl_projects_category'] = ProjectsCategoryModel::class;
 $GLOBALS['TL_MODELS']['tl_projects_category_multilingual'] = ProjectsMultilingualModel::class;
 
-// Content elements
-$GLOBALS['TL_CTE']['includes']['projectfilter'] = 'GeorgPreissl\Projects\ContentProjectFilter';
-
-/**
- * Hooks
- */
-// $GLOBALS['TL_HOOKS']['getSearchablePages'][] = array(Projects::class, 'getSearchablePages');
-// $GLOBALS['TL_HOOKS']['parseArticles'][] = array(Projects::class, 'addProjectCategoriesToTemplate');
-// $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array(Projects::class, 'parseCategoriesTags');
-// $GLOBALS['TL_HOOKS']['executePostActions'][] = ['georgpreissl_project_categories.listener.ajax', 'onExecutePostActions'];
-// $GLOBALS['TL_HOOKS']['projectsListCountItems'][] = ['georgpreissl_project_categories.listener.projects', 'onProjectsListCountItems'];
-// $GLOBALS['TL_HOOKS']['projectsListFetchItems'][] = ['georgpreissl_project_categories.listener.projects', 'onProjectsListFetchItems'];
-// $GLOBALS['TL_HOOKS']['parseArticles'][] = ['georgpreissl_project_categories.listener.template', 'onParseArticles'];
-// $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = ['georgpreissl_project_categories.listener.insert_tags', 'onReplace'];
-
-// if (false !== ($index = \array_search(['News', 'generateFeeds'], $GLOBALS['TL_HOOKS']['generateXmlFiles'], true))) {
-//     $GLOBALS['TL_HOOKS']['generateXmlFiles'][$index][0] = \Codefog\NewsCategoriesBundle\FeedGenerator::class;
-// }
-
-
-
-
-// if (in_array('changelanguage', ModuleLoader::getActive())) {
-//     $GLOBALS['TL_HOOKS']['translateUrlParameters'][] = array('GeorgPreissl\Projects\ProjectsCategories', 'translateUrlParameters');
-// }

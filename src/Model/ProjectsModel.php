@@ -45,8 +45,10 @@ class ProjectsModel extends Model
 			$arrColumns[] = "$t.published='1' AND ($t.start='' OR $t.start<=$time) AND ($t.stop='' OR $t.stop>$time)";
 		}
 
-		return static::findOneBy($arrColumns, $varId, $arrOptions);
+		return static::findOneBy($arrColumns, array($varId), $arrOptions);
 	}
+
+
 
 	/**
 	 * Find published project items by their parent ID

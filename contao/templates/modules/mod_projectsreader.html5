@@ -2,19 +2,44 @@
 
 <?php $this->block('content'); ?>
 
+	<?php if ($this->projects_siblingNavigation): ?>
+		<div class="mod_projectsreader__sibling-nav">
+
+			<?php if ($this->projects_siblingShowFirstLast && $this->first): ?>
+				<a class="mod_projectsreader__sibling-first" href="<?= $this->first ?>" title="<?= $this->firstTitle ?>"><?= $GLOBALS['TL_LANG']['MSC']['projects_first'] ?></a>
+			<?php endif; ?>
+
+			<?php if ($this->prev): ?>
+				<a class="mod_projectsreader__sibling-prev" href="<?= $this->prev ?>" title="<?= $this->prevTitle ?>"><?= $GLOBALS['TL_LANG']['MSC']['projects_previous'] ?></a>
+			<?php endif; ?>
+
+			<?php if ($this->next): ?>
+				<a class="mod_projectsreader__sibling-next" href="<?= $this->next ?>" title="<?= $this->nextTitle ?>"><?= $GLOBALS['TL_LANG']['MSC']['projects_next'] ?></a>
+			<?php endif; ?>
+
+			<?php if ($this->projects_siblingShowFirstLast && $this->last): ?>
+				<a class="mod_projectsreader__sibling-last" href="<?= $this->last ?>" title="<?= $this->lastTitle ?>"><?= $GLOBALS['TL_LANG']['MSC']['projects_last'] ?></a>
+			<?php endif; ?>
+			
+		</div>
+	<?php endif; ?>
+
 	<?= $this->project ?>
 
+	<?php if ($this->referer): ?>
 	<!-- indexer::stop -->
 	<div class="mod_projectsreader__back">
 		<?php 
 		$this->insert('link', [
 			'url' => $this->referer, 
-			'label' => 'Zur Übersicht',
+			'title' => $this->back,
+			'label' => $this->back,
 			'customClass' => 'mod_projectsreader__back-link',
 			'icon' => 'arrow-right'
 		]);
 		?>
 	</div>
 	<!-- indexer::continue -->
+	<?php endif; ?>
 
 <?php $this->endblock(); ?>

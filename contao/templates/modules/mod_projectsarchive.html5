@@ -2,11 +2,15 @@
 
 <?php $this->block('content'); ?>
 
-  <?php if (empty($this->articles)): ?>
+  <?php if (empty($this->projects)): ?>
     <p class="empty"><?= $this->empty ?></p>
   <?php else: ?>
-    <?= implode('', $this->articles) ?>
-    <?= $this->pagination ?>
+    <div class="mod_projectslist__items">
+			<?= implode('', $this->projects) ?>
+		</div>
+		<div class="mod_projectslist__pagination">
+			<?= $this->pagination ?>
+		</div>
   <?php endif; ?>
 
 <?php $this->endblock(); ?>

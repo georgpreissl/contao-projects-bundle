@@ -1,28 +1,28 @@
 <?php
 
-/**
- * Contao Open Source CMS
- *
- * Copyright (c) 2005-2016 Leo Feyer
- *
- * @license LGPL-3.0+
- */
 
 namespace GeorgPreissl\Projects\FrontendModule;
 
 
 
-/**
- * Front end module "project archive".
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
+use Contao\System;
+use Contao\StringUtil;
+use Contao\Input;
+use Contao\Date;
+use Contao\BackendTemplate;
+use Contao\Environment;
+use Contao\Database;
+use Contao\Config;
+use Contao\PageModel;
+use GeorgPreissl\Projects\Model\ProjectsModel;
+
+
 class ModuleProjectsMenu extends ModuleProjects
 {
 
 	/**
 	 * Current date object
-	 * @var \Date
+	 * @var Date
 	 */
 	protected $Date;
 
@@ -46,12 +46,14 @@ class ModuleProjectsMenu extends ModuleProjects
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
+		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
+
+		if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
 		{
 			/** @var \BackendTemplate|object $objTemplate */
-			$objTemplate = new \BackendTemplate('be_wildcard');
+			$objTemplate = new BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['projectsmenu'][0]) . ' ###';
+			$objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['projectsmenu'][0] . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -60,19 +62,24 @@ class ModuleProjectsMenu extends ModuleProjects
 			return $objTemplate->parse();
 		}
 
-		$this->projects_archives = $this->sortOutProtected(deserialize($this->projects_archives));
+		$this->projects_archives = $this->sortOutProtected(StringUtil::deserialize($this->projects_archives));
 
 		if (!is_array($this->projects_archives) || empty($this->projects_archives))
 		{
 			return '';
 		}
 
-		$this->strUrl = preg_replace('/\?.*$/', '', \Environment::get('request'));
+		$this->strUrl = preg_replace('/\?.*$/', '', Environment::get('request'));
 
-		if ($this->jumpTo && ($objTarget = $this->objModel->getRelated('jumpTo')) !== null)
+		if ($objTarget = PageModel::findById($this->objModel->jumpTo))
 		{
-			/** @var \PageModel $objTarget */
-			$this->strUrl = $objTarget->getFrontendUrl();
+			try
+			{
+				$this->strUrl = System::getContainer()->get('contao.routing.content_url_generator')->generate($objTarget);
+			}
+			catch (ExceptionInterface)
+			{
+			}
 		}
 
 		return parent::generate();
@@ -110,7 +117,7 @@ class ModuleProjectsMenu extends ModuleProjects
 	protected function compileYearlyMenu()
 	{
 		$arrData = array();
-		$time = \Date::floorToMinute();
+		$time = Date::floorToMinute();
 
 		/** @var \FrontendTemplate|object $objTemplate */
 		$objTemplate = new \FrontendTemplate('mod_projectmenu_year');
@@ -148,7 +155,7 @@ class ModuleProjectsMenu extends ModuleProjects
 		}
 
 		$this->Template->items = $arrItems;
-		$this->Template->showQuantity = ($this->project_showQuantity != '');
+		$this->Template->showQuantity = ($this->projects_showQuantityArchives != '');
 	}
 
 
@@ -158,10 +165,13 @@ class ModuleProjectsMenu extends ModuleProjects
 	protected function compileMonthlyMenu()
 	{
 		$arrData = array();
-		$time = \Date::floorToMinute();
+		$time = Date::floorToMinute();
+		$blnShowUnpublished = System::getContainer()->get('contao.security.token_checker')->isPreviewMode();
+		$request = System::getContainer()->get('request_stack')->getCurrentRequest();
+		$isBackend = $request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request);
 
 		// Get the dates
-		$objDates = $this->Database->query("SELECT FROM_UNIXTIME(date, '%Y') AS year, FROM_UNIXTIME(date, '%m') AS month, COUNT(*) AS count FROM tl_project WHERE pid IN(" . implode(',', array_map('intval', $this->projects_archives)) . ")" . ((!BE_USER_LOGGED_IN || TL_MODE == 'BE') ? " AND (start='' OR start<='$time') AND (stop='' OR stop>'" . ($time + 60) . "') AND published='1'" : "") . " GROUP BY year, month ORDER BY year DESC, month DESC");
+		$objDates = Database::getInstance()->query("SELECT FROM_UNIXTIME(date, '%Y') AS year, FROM_UNIXTIME(date, '%m') AS month, COUNT(*) AS count FROM tl_projects WHERE pid IN(" . implode(',', array_map('\intval', $this->projects_archives)) . ")" . ((!$blnShowUnpublished || $isBackend) ? " AND published=1 AND (start='' OR start<=$time) AND (stop='' OR stop>$time)" : "") . " GROUP BY year, month ORDER BY year DESC, month DESC");
 
 		while ($objDates->next())
 		{
@@ -193,18 +203,18 @@ class ModuleProjectsMenu extends ModuleProjects
 
 				$arrItems[$intYear][$intMonth]['date'] = $intDate;
 				$arrItems[$intYear][$intMonth]['link'] = $GLOBALS['TL_LANG']['MONTHS'][$intMonth] . ' ' . $intYear;
-				$arrItems[$intYear][$intMonth]['href'] = $this->strUrl . (\Config::get('disableAlias') ? '&amp;' : '?') . 'month=' . $intDate;
-				$arrItems[$intYear][$intMonth]['title'] = specialchars($GLOBALS['TL_LANG']['MONTHS'][$intMonth].' '.$intYear . ' (' . $quantity . ')');
+				$arrItems[$intYear][$intMonth]['href'] = $this->strUrl . (Config::get('disableAlias') ? '&amp;' : '?') . 'month=' . $intDate;
+				$arrItems[$intYear][$intMonth]['title'] = StringUtil::specialchars($GLOBALS['TL_LANG']['MONTHS'][$intMonth].' '.$intYear . ' (' . $quantity . ')');
 				$arrItems[$intYear][$intMonth]['class'] = trim(((++$count == 1) ? 'first ' : '') . (($count == $limit) ? 'last' : ''));
-				$arrItems[$intYear][$intMonth]['isActive'] = (\Input::get('month') == $intDate);
+				$arrItems[$intYear][$intMonth]['isActive'] = (Input::get('month') == $intDate);
 				$arrItems[$intYear][$intMonth]['quantity'] = $quantity;
 			}
 		}
 
 		$this->Template->items = $arrItems;
-		$this->Template->showQuantity = ($this->project_showQuantity != '') ? true : false;
-		$this->Template->url = $this->strUrl . (\Config::get('disableAlias') ? '&amp;' : '?');
-		$this->Template->activeYear = \Input::get('year');
+		$this->Template->showQuantity = ($this->projects_showQuantityArchives != '') ? true : false;
+		$this->Template->url = $this->strUrl . (Config::get('disableAlias') ? '&amp;' : '?');
+		$this->Template->activeYear = Input::get('year');
 	}
 
 
@@ -214,7 +224,7 @@ class ModuleProjectsMenu extends ModuleProjects
 	protected function compileDailyMenu()
 	{
 		$arrData = array();
-		$time = \Date::floorToMinute();
+		$time = Date::floorToMinute();
 
 		/** @var \FrontendTemplate|object $objTemplate */
 		$objTemplate = new \FrontendTemplate('mod_projectmenu_day');
@@ -235,7 +245,7 @@ class ModuleProjectsMenu extends ModuleProjects
 		// Create the date object
 		try
 		{
-			$this->Date = \Input::get('day') ? new \Date(\Input::get('day'), 'Ymd') : new \Date();
+			$this->Date = \Input::get('day') ? new Date(\Input::get('day'), 'Ymd') : new Date();
 		}
 		catch (\OutOfBoundsException $e)
 		{
@@ -285,7 +295,7 @@ class ModuleProjectsMenu extends ModuleProjects
 		$this->Template->days = $this->compileDays();
 		$this->Template->weeks = $this->compileWeeks($arrData);
 
-		$this->Template->showQuantity = ($this->project_showQuantity != '') ? true : false;
+		$this->Template->showQuantity = ($this->projects_showQuantityArchives != '') ? true : false;
 	}
 
 

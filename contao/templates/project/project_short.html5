@@ -1,6 +1,3 @@
-
-
-
 <a href="<?= $this->link ?>" <?= $this->attributes ?> title="<?= $this->alt ?>" class="ref_teaser block<?= $this->class ?>" >
 
 	<div class="ref_teaser_inner" >

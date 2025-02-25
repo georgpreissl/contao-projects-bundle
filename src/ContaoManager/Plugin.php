@@ -24,7 +24,11 @@ class Plugin implements BundlePluginInterface
         ];
     }
 
-
+    // public function registerContainerConfiguration(LoaderInterface $loader, array $config)
+    // {
+    //     $path = '@GeorgPreisslProjectsBundle/config/';
+    //     $loader->load("$path/services.yml");
+    // }
 
 
 

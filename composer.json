@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "GeorgPreissl\\Projects\\": "src/"
+            "GeorgPreissl\\Projects\\": "src"
         }     
     },    
     "extra": {

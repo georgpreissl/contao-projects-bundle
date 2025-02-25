@@ -29,21 +29,21 @@
         <source>Shows the details of a project item</source>
         <target>Stellt einen einzelnen Projektebeitrag dar</target>
       </trans-unit>
-      <trans-unit id="FMD.projectarchive.0">
+      <trans-unit id="FMD.projectsarchive.0">
         <source>Project archive</source>
-        <target>Projektearchiv</target>
+        <target>Projektarchiv</target>
       </trans-unit>
-      <trans-unit id="FMD.projectarchive.1">
+      <trans-unit id="FMD.projectsarchive.1">
         <source>Adds a project archive to the page</source>
-        <target>Fügt der Seite ein Projektearchiv hinzu</target>
+        <target>Fügt der Seite ein Projektarchiv hinzu</target>
       </trans-unit>
-      <trans-unit id="FMD.projectmenu.0">
+      <trans-unit id="FMD.projectsmenu.0">
         <source>Project archive menu</source>
-        <target>Projektearchiv-Menü</target>
+        <target>Projektarchiv-Menü</target>
       </trans-unit>
-      <trans-unit id="FMD.projectmenu.1">
+      <trans-unit id="FMD.projectsmenu.1">
         <source>Generates a navigation menu to browse the project archive</source>
-        <target>Erzeugt ein Menü zur Navigation des Projektearchivs</target>
+        <target>Erzeugt ein Menü zur Navigation des Projektarchivs</target>
       </trans-unit>
       <trans-unit id="FMD.projectscategories.0">
         <source>Menu with project categories</source>

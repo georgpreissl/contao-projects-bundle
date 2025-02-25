@@ -8,6 +8,7 @@ use Codefog\HasteBundle\Model\DcaRelationsModel;
 use GeorgPreissl\Projects\Exception\CategoryNotFoundException;
 use GeorgPreissl\Projects\Exception\NoProjectException;
 use GeorgPreissl\Projects\FrontendModule\CumulativeFilterModule;
+use GeorgPreissl\Projects\Model\ProjectsModel;
 use GeorgPreissl\Projects\Model\ProjectsCategoryModel;
 use GeorgPreissl\Projects\ProjectsCategoriesManager;
 use Contao\CoreBundle\Framework\ContaoFramework;
@@ -121,6 +122,32 @@ class ProjectsCriteriaBuilder
             if (null !== $featured) {
                 $criteria->setFeatured($featured);
             }
+
+
+			if($module->projects_relatedOnly){
+
+				$projectAlias = Input::get('auto_item', false, true);
+				
+				if (!empty($projectAlias)) {
+		
+					$project = ProjectsModel::findByAlias($projectAlias);
+
+					if (null !== $project) {
+						$arrRelatedIds = array_map('intval', StringUtil::deserialize($project->relatedProjects, true));
+
+
+                        $criteria->setRelatedProjects($arrRelatedIds);
+						// dump($criteria);
+						
+					}
+					
+
+				}				
+
+						
+			}
+
+
 
             // Set the criteria for related categories
             if ($module->projects_relatedCategories) {

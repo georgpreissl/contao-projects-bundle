@@ -10,16 +10,18 @@ use Contao\Config;
 use Contao\StringUtil;
 use Contao\BackendTemplate;
 use Contao\PageModel;
+use Contao\Date;
+use Contao\Environment;
+use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\CoreBundle\Routing\ResponseContext\HtmlHeadBag\HtmlHeadBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use GeorgPreissl\Projects\Model\ProjectsModel;
+use GeorgPreissl\Projects\Projects;
+use GeorgPreissl\Projects\ProjectsSiblingNavigation;
 
-/**
- * Front end module "project reader".
- *
- * @author Leo Feyer <https://github.com/leofeyer>
- */
+
 class ModuleProjectsReader extends ModuleProjects
 {
 
@@ -43,7 +45,7 @@ class ModuleProjectsReader extends ModuleProjects
 			/** @var \BackendTemplate|object $objTemplate */
 			$objTemplate = new BackendTemplate('be_wildcard');
 
-			$objTemplate->wildcard = '### ' . utf8_strtoupper($GLOBALS['TL_LANG']['FMD']['projectsreader'][0]) . ' ###';
+			$objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['projectsreader'][0] . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -90,7 +92,7 @@ class ModuleProjectsReader extends ModuleProjects
 		if ($this->overviewPage && ($overviewPage = PageModel::findById($this->overviewPage)))
 		{
 			$this->Template->referer = $urlGenerator->generate($overviewPage);
-			$this->Template->back = $this->customLabel ?: $GLOBALS['TL_LANG']['MSC']['newsOverview'];
+			$this->Template->back = $this->customLabel ?: $GLOBALS['TL_LANG']['MSC']['projectOverview'];
 		}
 
 		// Get the project item
@@ -129,10 +131,12 @@ class ModuleProjectsReader extends ModuleProjects
 
 			if ($objProject->pageTitle)
 			{
+				// für das Projekt wurde ein eigener Meta-Titel vergeben, er soll nun auf der Seite verwendet werden
 				$htmlHeadBag->setTitle($objProject->pageTitle); // Already stored decoded
 			}
 			elseif ($objProject->headline)
 			{
+				// es wurde kein Meta-Titel vergeben, daher wird die Headline als selbiger verwendet
 				$htmlHeadBag->setTitle($htmlDecoder->inputEncodedToPlainText($objProject->headline));
 			}
 
@@ -152,6 +156,7 @@ class ModuleProjectsReader extends ModuleProjects
 
 			if ($objProject->canonicalLink)
 			{
+				
 				$url = System::getContainer()->get('contao.insert_tag.parser')->replaceInline($objProject->canonicalLink);
 
 				// Ensure absolute links
@@ -166,6 +171,7 @@ class ModuleProjectsReader extends ModuleProjects
 				}
 
 				$htmlHeadBag->setCanonicalUri($url);
+				
 			}
 			elseif (!$this->projects_keepCanonical)
 			{
@@ -178,8 +184,21 @@ class ModuleProjectsReader extends ModuleProjects
 		$this->Template->project = $strProject;
 
 
-
+		// dump($this->projects_order);
+		// dump($this->projects_siblingNavigation);
+		
+		
+		if($this->projects_siblingNavigation)
+		{
+			$this->Template = ProjectsSiblingNavigation::parseSiblingNavigation($this,$this->Template,$objProject);
+		}
+		
 
 
 	}
+
+
+
+
+
 }

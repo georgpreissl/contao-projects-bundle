@@ -111,8 +111,8 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 									. '{category_legend},categories;'
 									. '{teaser_legend},subheadline,teaser;'
 									. '{image_legend},addImage;'
-									. '{data_legend},shortDescription,description,customer,location,date;'
-									. '{gallery_legend},multiSRC,sortBy;'
+									. '{data_legend},description,customer,location,dateOfCompletion,period;'
+									. '{gallery_legend},multiSRC,sortBy,galleryFullsize;'
 									. '{enclosure_legend:hide},addEnclosure;'
 									. '{related_legend:hide},relatedProjects;'
 									. '{expert_legend:hide},cssClass;'
@@ -276,14 +276,6 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			),
 			'sql'                     => null
 		),		
-		'shortDescription' => array
-		(
-			'exclude'                 => true,
-			'search'                  => true,
-			'inputType'               => 'text',
-			'eval'                    => array('maxlength'=>255, 'tl_class'=>'long'),
-			'sql'                     => "varchar(255) NOT NULL default ''"
-		),
 		'description' => array
 		(
 			'exclude'                 => true,
@@ -419,7 +411,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			// (
 			// 	array('tl_projects', 'setMultiSrcFlags')
 			// )
-		),		
+		),			
 		'orderSRC' => array
 		(
 			'label'                   => &$GLOBALS['TL_LANG']['MSC']['sortOrder'],
@@ -434,6 +426,14 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		// 	'eval'                    => array('tl_class'=>'w50 clr'),
 		// 	'sql'                     => "varchar(32) COLLATE ascii_bin NOT NULL default ''"
 		// ),
+		'galleryFullsize' => array
+		(
+			'label'                   => &$GLOBALS['TL_LANG']['tl_content']['fullsize'],
+			'exclude'                 => true,
+			'inputType'               => 'checkbox',
+			'eval'                    => array('tl_class'=>'w50 m12'),
+			'sql'                     => "char(1) NOT NULL default ''"
+		),
 		'sortBy' => array
 		(
 			'exclude'                 => true,
@@ -451,22 +451,30 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'inputType'               => 'text',
 			'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
 			'sql'                     => "varchar(255) NOT NULL default ''"
+		),
+		'dateOfCompletion' => array
+		(
+			'filter'                  => true,
+			'sorting'                 => true,
+			'inputType'               => 'text',
+			'eval'                    => array('rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
+			'sql'                     => "int(10) unsigned NOT NULL default 0"
+		),	
+		'period' => array
+		(
+			'exclude'                 => true,
+			'search'                  => true,
+			'inputType'               => 'text',
+			'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
+			'sql'                     => "varchar(255) NOT NULL default ''"
 		),		
-		// 'period' => array
-		// (
-		// 	'exclude'                 => true,
-		// 	'search'                  => true,
-		// 	'inputType'               => 'text',
-		// 	'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
-		// 	'sql'                     => "varchar(255) NOT NULL default ''"
-		// ),		
 		'location' => array
 		(
 			'exclude'                 => true,
 			'search'                  => true,
 			'sorting'                 => true,
 			'inputType'               => 'text',
-			'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50 clr'),
+			'eval'                    => array('maxlength'=>255, 'tl_class'=>'w50'),
 			'sql'                     => "text NULL"
 		),		
 		'addEnclosure' => array
@@ -540,7 +548,7 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 			'exclude'                 => true,
 			'inputType'               => 'picker',
 			'eval'                    => ['multiple' => true, 'fieldType' => 'checkbox', 'tl_class' => 'clr'],
-			'relation'                => ['type' => 'belongsToMany', 'load' => 'lazy', 'table' => 'tl_news'],
+			'relation'                => ['type' => 'belongsToMany', 'load' => 'lazy', 'table' => 'tl_projects'],
 			'sql'                     => ['type' => 'blob', 'length' => 65535, 'notnull' => false],
 		),	
 		'cssClass' => array

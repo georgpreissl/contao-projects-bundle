@@ -8,7 +8,7 @@
     	<div class="mod_projectslist__items">
 			<?= implode('', $this->projects) ?>
 		</div>
-		<div class="ref_teaser_pagination">
+		<div class="mod_projectslist__pagination">
 			<?= $this->pagination ?>
 		</div>
 	<?php endif; ?>

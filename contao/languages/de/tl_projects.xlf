@@ -140,12 +140,20 @@
         <source>xxx</source>
         <target>Hier können Sie den Kunden des Projekts eingeben.</target>
       </trans-unit>
+      <trans-unit id="tl_projects.dateOfCompletion.0">
+        <source>Date of completion</source>
+        <target>Datum der Fertigstellung</target>
+      </trans-unit>
+      <trans-unit id="tl_projects.dateOfCompletion.1">
+        <source>Here you can enter the date of completion.</source>
+        <target>Hier können Sie das Datum der Fertigstellung eingeben.</target>
+      </trans-unit>
       <trans-unit id="tl_projects.period.0">
         <source>Period</source>
         <target>Zeitraum</target>
       </trans-unit>
       <trans-unit id="tl_projects.period.1">
-        <source>xxx</source>
+        <source>Here you can enter the period of service provision.</source>
         <target>Hier können Sie den Zeitraum der Leistungserbringung eingeben.</target>
       </trans-unit>
       <trans-unit id="tl_projects.location.0">
@@ -274,7 +282,7 @@
       </trans-unit>
       <trans-unit id="tl_projects.relatedProjects.1">
         <source>Select other projects related to this project.</source>
-        <target>Wählen Sie andere Projekte aus, die mit diesem Beitrag verwandt sind.</target>
+        <target>Wählen Sie andere Projekte aus, die mit diesem Projekt verwandt sind.</target>
       </trans-unit>
       <trans-unit id="tl_projects.featured.0">
         <source>Feature item</source>

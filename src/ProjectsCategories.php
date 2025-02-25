@@ -59,6 +59,7 @@ class ProjectsCategories
      */
     public static function checkMultilingual()
     {
+        
         return (in_array('dc_multilingual', \Config::getInstance()->getActiveModules()) && count(static::getAvailableLanguages()) > 1) ? true : false;
     }
 

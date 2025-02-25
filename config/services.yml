@@ -9,3 +9,4 @@ services:
     GeorgPreissl\Projects\:
         resource: '../src'
         exclude: '../../{ContentElement,FrontendModule,Model}'
+

@@ -116,6 +116,19 @@ class ProjectsCriteria
         }
     }
 
+
+    /**
+     * Set the related projects.
+     *
+     * @param bool $enable
+     */
+    public function setRelatedProjects($arrRelatedIds)
+    {
+        $t = $this->getProjectsModelAdapter()->getTable();
+        $this->columns[] = "$t.id IN (".implode(',', $arrRelatedIds).")";
+    }
+
+
     /**
      * Set the time frame.
      *
