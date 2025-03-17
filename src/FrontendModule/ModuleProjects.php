@@ -218,12 +218,14 @@ abstract class ModuleProjects extends Module
 		$arrGallery = array();
 		$images = array_values($images);
 
+		$fullsize = $objProject->galleryFullsize == "1" ? true : false;
+
 		$figureBuilder = System::getContainer()
 			->get('contao.image.studio')
 			->createFigureBuilder()
 			->setSize($this->projects_imgSizeGallery)
 			->setLightboxGroupIdentifier('lb' . $this->id)
-			->enableLightbox($objProject->galleryFullsize);
+			->enableLightbox($fullsize);
 
 		foreach ($images as $image) {
 			$figure = $figureBuilder

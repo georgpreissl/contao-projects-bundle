@@ -73,9 +73,9 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		),
 		'label' => array
 		(
-			'fields'                  => array('headline', 'location'),
-			'format'                  => '%s <span class="label-info">[%s]</span>',
-			'maxCharacters'           => 40
+			'fields'                  => array('headline', 'customer', 'location', 'dateOfCompletion'),
+			'format'                  => '%s <span class="label-info">[%s %s %s]</span>',
+			'maxCharacters'           => 60
 		),
 		'operations' => array
 		(
@@ -105,14 +105,14 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		'__selector__'                => array('source', 'addImage', 'addEnclosure', 'overwriteMeta'),
 		'default'                     => ''
 									. '{title_legend},headline,featured,alias;'
+									. '{category_legend},categories;'
 									. '{date_legend},date,time;'
 									. '{source_legend:hide},source,linkText,canonicalLink;'
 									. '{meta_legend},pageTitle,robots,metaDescription,serpPreview;'
-									. '{category_legend},categories;'
 									. '{teaser_legend},subheadline,teaser;'
 									. '{image_legend},addImage;'
-									. '{data_legend},description,customer,location,dateOfCompletion,period;'
 									. '{gallery_legend},multiSRC,sortBy,galleryFullsize;'
+									. '{data_legend},description,customer,location,dateOfCompletion,period;'
 									. '{enclosure_legend:hide},addEnclosure;'
 									. '{related_legend:hide},relatedProjects;'
 									. '{expert_legend:hide},cssClass;'
@@ -456,10 +456,11 @@ $GLOBALS['TL_DCA']['tl_projects'] = array
 		(
 			'filter'                  => true,
 			'sorting'                 => true,
+			'flag'                    => DataContainer::SORT_MONTH_BOTH,
 			'inputType'               => 'text',
-			'eval'                    => array('rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),
-			'sql'                     => "int(10) unsigned NOT NULL default 0"
-		),	
+			'eval'                    => array('rgxp'=>'date', 'datepicker'=>true, 'tl_class'=>'w50 wizard'),		
+			'sql'                     => "varchar(10) NOT NULL default ''"
+		),			
 		'period' => array
 		(
 			'exclude'                 => true,
@@ -757,6 +758,9 @@ class tl_projects extends Backend
 
 		return $varValue;
 	}
+
+
+
 
 	/**
 	 * Set the timestamp to 00:00:00 (see #26)

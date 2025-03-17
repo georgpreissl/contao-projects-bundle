@@ -140,9 +140,9 @@ class ModuleProjectsReader extends ModuleProjects
 				$htmlHeadBag->setTitle($htmlDecoder->inputEncodedToPlainText($objProject->headline));
 			}
 
-			if ($objProject->description)
+			if ($objProject->metaDescription)
 			{
-				$htmlHeadBag->setMetaDescription($htmlDecoder->inputEncodedToPlainText($objProject->description));
+				$htmlHeadBag->setMetaDescription($htmlDecoder->inputEncodedToPlainText($objProject->metaDescription));
 			}
 			elseif ($objProject->teaser)
 			{
